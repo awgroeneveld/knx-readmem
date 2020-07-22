@@ -37,8 +37,51 @@ data class Static(
     @JacksonXmlElementWrapper
     val parameterTypes:List<ParameterType>,
     @JacksonXmlProperty(localName = "Parameters")
-    val parametersAndUnions:ParametersAndUnions
+    val parametersAndUnions:ParametersAndUnions,
+    @JacksonXmlElementWrapper
+    val parameterRefs: List<ParameterRef>,
 
+    val comObjectTable:ComObjectTable
+)
+
+data class ComObjectTable(
+    val codeSegment: String,
+    val offset: Int,
+    @JacksonXmlProperty(localName = "ComObject")
+    @JacksonXmlElementWrapper(useWrapping = false)
+    val comObjects: List<ComObject>
+) {
+
+}
+
+data class ComObject(
+    val id: String,
+    val name: String,
+    val text: String,
+    val number: Int,
+    val functionText: String,
+    val objectSize: String,
+    val readFlag: EnabledDisabled,
+    val writeFlag: EnabledDisabled,
+    val communicationFlag: EnabledDisabled,
+    val transmitFlag:EnabledDisabled,
+    val updateFlag: EnabledDisabled,
+    val readOnInitFlag: EnabledDisabled
+)
+
+enum class EnabledDisabled{
+    Enabled, Disabled
+}
+
+data class ParameterRef(
+    val id: String,
+    val refId: String,
+    val tag: Int,
+    val displayOrder: Int,
+    val value: Int?,
+    val text: String?,
+    val access: Access?,
+    val name: String?
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -122,5 +165,5 @@ enum class ParamValueType {
 }
 
 enum class Access{
-    None, Read
+    None, Read, ReadWrite
 }
