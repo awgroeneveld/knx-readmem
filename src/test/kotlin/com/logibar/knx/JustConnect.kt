@@ -23,7 +23,7 @@ class JustConnect {
 //        val deviceDescriptor=client.readDeviceDesc(dest,0)
 
         try{
-        val x=client.readMemory(dest, 16384, 100)
+        val x=client.readMemory(dest, 0x4552, 2)
 
         // check for BCU1/BCU2 first, which don't have interface objects
 //        if (deviceDescriptor != null) {
