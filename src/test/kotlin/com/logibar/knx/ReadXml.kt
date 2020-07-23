@@ -6,27 +6,69 @@ import org.junit.jupiter.api.Test
 import java.awt.print.Book
 import java.io.StringWriter
 import java.util.*
+import java.util.regex.Pattern
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.JAXBException
 import javax.xml.bind.Marshaller
+import javax.xml.bind.ValidationEvent
+import javax.xml.bind.ValidationEventHandler
+import javax.xml.bind.ValidationEventLocator
 import javax.xml.bind.helpers.DefaultValidationEventHandler
 import javax.xml.stream.XMLInputFactory
 import kotlin.experimental.xor
 import kotlin.streams.toList
+
 class ReadXml {
+
+    class MyValidationEventHandler() : ValidationEventHandler {
+        val defaultValidationEventHandler = DefaultValidationEventHandler()
+        val ignoredNodes = listOf("LoadProcedures","Options")
+        val regex = Pattern.compile(".*local:\"(.*)\"\\)")
+
+        override fun handleEvent(event: ValidationEvent): Boolean {
+            var newEvent = event
+            val matcher = regex.matcher(event.message)
+            if (matcher.find()) {
+                val local = matcher.group(1)
+                if (ignoredNodes.contains(local)) {
+                    newEvent = object : ValidationEvent {
+                        override fun getMessage(): String {
+                            return event.message
+                        }
+
+                        override fun getLinkedException(): Throwable {
+                            return event.linkedException
+                        }
+
+                        override fun getLocator(): ValidationEventLocator {
+                            return event.locator
+                        }
+
+                        override fun getSeverity(): Int {
+                            return ValidationEvent.WARNING
+                        }
+                    }
+                }
+            }
+            return defaultValidationEventHandler.handleEvent(newEvent)
+
+        }
+
+    }
+
     @Test
     fun readXML() {
-         val context = JAXBContext.newInstance(Knx::class.java);
+        val context = JAXBContext.newInstance(Knx::class.java);
         val f = this::class.java.getResourceAsStream("/dimmer.xml")
 
         val unmarshaller = context.createUnmarshaller()
-        unmarshaller.eventHandler=(DefaultValidationEventHandler());
+        unmarshaller.eventHandler = (MyValidationEventHandler());
         val knx = unmarshaller.unmarshal(f) as Knx
 
-        val writer=StringWriter()
-        val marshaller=context.createMarshaller()
+        val writer = StringWriter()
+        val marshaller = context.createMarshaller()
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            marshaller.marshal(knx, writer)
+        marshaller.marshal(knx, writer)
         println(writer.toString())
 
 //        val decoded=Base64.getDecoder().decode("MAUAAAEAAAABAAAAAQABAf//AYABAQEBCAAIIAAAAAAAAQD/EAAAAAAAAAAAAAAAAAAAAAAAAAz/DP8MAAAAAAAAAAAAAAAAAAAAAAAAAAH//wGAAQEBAQgACCAAAAAAAAEA/xAAAAAAAAAAAAAAAAAgAAAAAAAM/wz/DAAAAAAAAAAAAAAAAAAAAAAAAAAB//8BgAEBAQEIAAggAAAAAAABAP8QAAAAAAAAAAAAAAAAIAAAAAAADP8M/wwAAAAAAAAAAAAAAAAAAAAAAAAAAf//AYABAQEBCAAIIAAAAAAAAQD/EAAAAAAAAAAAAAAAACAAAAAAAAz/DP8MAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAQIDBAUGBwggQGCAoMDg/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5AFd6Q/8AAQAA")
@@ -40,7 +82,7 @@ class ReadXml {
         val indexes = bitset.stream()
             .toList()
         val memAddresses = indexes.map { bytePos + it }
-       // val manufacturer=knx.manufacturerData.manufacturer
+        // val manufacturer=knx.manufacturerData.manufacturer
 //        val prog = manufacturer.applicationPrograms.first()
 //        val codeSegment = prog.static.code.absoluteSegments.sortedByDescending { segment -> segment.address }
 //            .first { it.address <= memAddresses.min()!! }
