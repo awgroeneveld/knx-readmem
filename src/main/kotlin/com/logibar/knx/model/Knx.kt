@@ -35,8 +35,10 @@ data class Manufacturer(
     val refId: String? = null,
     @field:XmlElementWrapper(name = "ApplicationPrograms")
     @field:XmlElement(name = "ApplicationProgram")
-    val applicationPrograms: MutableList<ApplicationProgram>? = LinkedList()
-//    val languages: List<MyLanguage>
+    val applicationPrograms: MutableList<ApplicationProgram>? = LinkedList(),
+    @field:XmlElementWrapper(name = "Languages")
+    @field:XmlElement(name = "Language")
+    val languages: MutableList<MyLanguage>? = LinkedList()
 )
 
 
@@ -157,7 +159,8 @@ class ParametersAndUnions() {
 
 }
 
-data class Parameter(
+
+class Parameter(
     @XmlID
     @XmlAttribute(name = "Id")
     val id: String? = null,
@@ -175,18 +178,25 @@ data class Parameter(
     @field:XmlElement(name = "Memory")
     val memory: Memory? = null,
     @field: XmlElement(name = "Property")
-    val property: Property?=null
+    val property: Property? = null,
+    @XmlAttribute(name = "Offset")
+    val offset: Int? = null,
+    @XmlAttribute(name = "BitOffset")
+    val bitOffset: Int? = null,
+    @XmlAttribute(name = "DefaultUnionParameter")
+    val defaultUnionParameter: Boolean? = null
 )
 
+
 data class Property(
-    @XmlAttribute(name="ObjectIndex")
-    val objectIndex: Int?=null,
-    @XmlAttribute(name="PropertyId")
-    val propertyId: Int?=null,
-    @XmlAttribute(name="Offset")
-    val offset: Int?=null,
-    @XmlAttribute(name="BitOffset")
-    val bitOffset: Int?=null
+    @XmlAttribute(name = "ObjectIndex")
+    val objectIndex: Int? = null,
+    @XmlAttribute(name = "PropertyId")
+    val propertyId: Int? = null,
+    @XmlAttribute(name = "Offset")
+    val offset: Int? = null,
+    @XmlAttribute(name = "BitOffset")
+    val bitOffset: Int? = null
 )
 
 data class Union(
@@ -195,31 +205,9 @@ data class Union(
     @field:XmlElement(name = "Memory")
     val memory: Memory? = null,
     @field:XmlElement(name = "Parameter")
-    val parameters: MutableList<ExtendedParameter>? = LinkedList()
+    val parameters: MutableList<Parameter>? = LinkedList()
 )
 
-data class ExtendedParameter(
-    @XmlAttribute(name = "Id")
-    val id: String? = null,
-    @XmlAttribute(name = "Name")
-    val name: String? = null,
-    @XmlAttribute(name = "ParameterType")
-    val parameterType: String? = null,
-    @XmlAttribute(name = "Text")
-    val text: String? = null,
-    @XmlAttribute(name = "Access")
-    val access: Access? = null,
-    @XmlAttribute(name = "Value")
-    val value: Int? = null,
-    @field:XmlElement(name = "Memory")
-    val memory: Memory? = null,
-    @XmlAttribute(name = "Offset")
-    val offset: Int? = null,
-    @XmlAttribute(name = "BitOffset")
-    val bitOffset: Int? = null,
-    @XmlAttribute(name = "DefaultUnionParameter")
-    val defaultUnionParameter: Boolean? = null
-)
 
 data class Memory(
     @XmlIDREF
@@ -371,7 +359,8 @@ data class ParameterBlock(
     @XmlAttribute(name = "ParamRefId")
     val parameterRef: ParameterRef? = null,
     @field: XmlElements(
-        XmlElement(name = "ParameterRefRef", type = ParameterRefRef::class)
+        XmlElement(name = "ParameterRefRef", type = ParameterRefRef::class),
+        XmlElement(name = "choose", type = Choose::class)
     )
     val items: MutableList<UiElement>? = LinkedList()
 ) : UiElement()
@@ -404,85 +393,37 @@ data class WhenToActivate(
     val default: Boolean? = null,
     @field:XmlElements(
         XmlElement(name = "ParameterRefRef", type = ParameterRefRef::class),
-        XmlElement(name = "ComObjectRefRef", type = ComObjectRefRef::class)
+        XmlElement(name = "ComObjectRefRef", type = ComObjectRefRef::class),
+        XmlElement(name = "choose", type = Choose::class),
+        XmlElement(name = "ParameterBlock", type = ParameterBlock::class)
     )
     val thenItems: MutableList<UiElement>? = LinkedList()
 )
 
-//
-//data class MyLanguage(
-//    val identifier: String,
-//    val translationUnit: TranslationUnit
-//){
-//
-//}
-//
-//data class TranslationUnit(
-//    val refId: String,
-//    @JsonProperty("TranslationElement")
-//    @JacksonXmlElementWrapper(useWrapping = false)
-//    val translationElements: List<TranslationElement>
-//)
-//
-//data class TranslationElement(
-//    val refId: String,
-//    @JsonProperty("Translation")
-//    @JacksonXmlElementWrapper(useWrapping = false)
-//    val translations: List<Translation>
-//)
-//
-//data class Translation(
-//    val attributeName: String,
-//    val text: String
-//)
-//
-//@JsonIgnoreProperties(ignoreUnknown = true)
-//data class ApplicationProgram(val id: String, val static: Static, val dynamic: Dynamic)
-//
+data class MyLanguage(
+    @XmlAttribute(name="Identifier")
+    val identifier: String?=null,
+    @field:XmlElement(name="TranslationUnit")
+    val translationUnit: TranslationUnit?=null
+)
 
-//
-//@JsonIgnoreProperties(ignoreUnknown = true)
+data class TranslationUnit(
+    @XmlAttribute(name="RefId")
+    val refId: String?=null,
+    @field:XmlElement(name="TranslationElement")
+    val translationElements: MutableList<TranslationElement>?=LinkedList()
+)
 
-//
-//
-//
-//
-//
+data class TranslationElement(
+    @XmlAttribute(name="RefId")
+    val refId: String?=null,
+    @field:XmlElement(name="Translation")
+    val translations: MutableList<Translation>?=LinkedList()
+)
 
-//
-//
-//
-//data class ParameterRef(
-//    val id: String,
-//    val refId: String,
-//    val tag: Int,
-//    val displayOrder: Int,
-//    val value: Int?,
-//    val text: String?,
-//    val access: Access?,
-//    val name: String?
-//)
-//
-
-//
-
-//
-//
-//
-//
-//
-//
-//
-//}
-//
-
-//@JsonIgnoreProperties(ignoreUnknown = true)
-//
-//
-
-//
-//
-//
-
-//
-
+data class Translation(
+    @XmlAttribute(name="AtttributeName")
+    val attributeName: String?=null,
+    @XmlAttribute(name="Text")
+    val text: String?=null
+)
