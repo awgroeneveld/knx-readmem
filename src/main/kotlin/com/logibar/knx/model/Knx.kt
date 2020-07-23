@@ -3,10 +3,12 @@ package com.logibar.knx.model
 import java.util.*
 import javax.xml.bind.annotation.XmlAccessType
 import javax.xml.bind.annotation.XmlAccessorType
-import javax.xml.bind.annotation.XmlAnyElement
 import javax.xml.bind.annotation.XmlAttribute
 import javax.xml.bind.annotation.XmlElement
 import javax.xml.bind.annotation.XmlElementWrapper
+import javax.xml.bind.annotation.XmlElements
+import javax.xml.bind.annotation.XmlID
+import javax.xml.bind.annotation.XmlIDREF
 import javax.xml.bind.annotation.XmlRootElement
 import javax.xml.bind.annotation.XmlSchemaType
 
@@ -14,45 +16,46 @@ import javax.xml.bind.annotation.XmlSchemaType
 @XmlRootElement(name = "KNX")
 data class Knx(
     @field:XmlElement(name = "ManufacturerData")
-    val manufacturerData:ManufacturerData?=null,
-    @XmlAttribute(name="CreatedBy")
-    val createdBy: String?=null
-){
+    val manufacturerData: ManufacturerData? = null,
+    @XmlAttribute(name = "CreatedBy")
+    val createdBy: String? = null
+) {
 
 }
 
 @XmlAccessorType(XmlAccessType.FIELD)
 data class ManufacturerData(
     @field:XmlElement(name = "Manufacturer")
-    val manufacturer: Manufacturer?=null
+    val manufacturer: Manufacturer? = null
 )
 
 @XmlAccessorType(XmlAccessType.FIELD)
 data class Manufacturer(
     @XmlAttribute(name = "RefId")
-    val refId: String?=null,
-    @field:XmlElementWrapper(name="ApplicationPrograms")
-    @field:XmlElement(name="ApplicationProgram")
-    val applicationPrograms:MutableList<ApplicationProgram>? = LinkedList()
+    val refId: String? = null,
+    @field:XmlElementWrapper(name = "ApplicationPrograms")
+    @field:XmlElement(name = "ApplicationProgram")
+    val applicationPrograms: MutableList<ApplicationProgram>? = LinkedList()
 //    val languages: List<MyLanguage>
 )
 
 
 data class ApplicationProgram(
-    @XmlAttribute(name="Id")
-    val id: String?=null,
-    @field:XmlElement(name="Static")
-    val static: Static?=null
+    @XmlAttribute(name = "Id")
+    val id: String? = null,
+    @field:XmlElement(name = "Static")
+    val static: Static? = null
 //    val dynamic: Dynamic?=null
 )
 
 data class Static(
-    @field:XmlElement(name="Code")
-    val code:Code?=null
-//    @JacksonXmlElementWrapper
-//    val parameterTypes:List<ParameterType>,
-//    @JacksonXmlProperty(localName = "Parameters")
-//    val parametersAndUnions:ParametersAndUnions,
+    @field:XmlElement(name = "Code")
+    val code: Code? = null,
+    @field:XmlElementWrapper(name = "ParameterTypes")
+    @field:XmlElement(name = "ParameterType")
+    val parameterTypes: MutableList<ParameterType>? = LinkedList(),
+    @field:XmlElement(name = "Parameters")
+    val parametersAndUnions:ParametersAndUnions?=null
 //    @JacksonXmlElementWrapper
 //    val parameterRefs: List<ParameterRef>,
 //
@@ -65,20 +68,145 @@ data class Static(
 
 data class Code(
     @field:XmlElement(name = "AbsoluteSegment")
-    val absoluteSegments: MutableList<AbsoluteSegment>?=LinkedList()
+    val absoluteSegments: MutableList<AbsoluteSegment>? = LinkedList()
 )
 
 class AbsoluteSegment(
-    @XmlAttribute(name="Id")
-    val id: String?=null,
-    @XmlAttribute(name="Address")
-    val address:Int?=null,
-    @XmlAttribute(name="Size")
-    val size:Int?=null,
-    @field:XmlElement(name="Data")
+    @XmlID
+    @XmlAttribute(name = "Id")
+    val id: String? = null,
+    @XmlAttribute(name = "Address")
+    val address: Int? = null,
+    @XmlAttribute(name = "Size")
+    val size: Int? = null,
+    @field:XmlElement(name = "Data")
     @field:XmlSchemaType(name = "base64Binary")
-    val data:ByteArray?=null
+    val data: ByteArray? = null
 )
+
+
+data class ParameterType(
+    @XmlAttribute(name = "Id")
+    val id: String? = null,
+    @XmlAttribute(name = "Name")
+    val name: String? = null,
+    @field:XmlElement(name = "TypeNumber")
+    val typeNumber: TypeNumber? = null,
+    @field:XmlElement(name = "TypeRestriction")
+    val typeRestriction: TypeRestriction? = null
+)
+
+data class TypeRestriction(
+    @XmlAttribute(name = "Base")
+    val base: String? = null,
+    @XmlAttribute(name = "SizeInBit")
+    val sizeInBit: Int? = null,
+    @field:XmlElement(name = "Enumeration")
+    val enumerations: MutableList<Enumeration>?=LinkedList()
+)
+
+class Enumeration(
+    @XmlAttribute(name = "Text")
+    val text: String? = null,
+    @XmlAttribute(name = "Value")
+    val value: Int? = null,
+    @XmlAttribute(name = "Id")
+    val id: String? = null,
+    @XmlAttribute(name = "DisplayOder")
+    val displayOrder: Int? = null,
+    @XmlAttribute(name = "BinaryValue")
+    @field:XmlSchemaType(name = "base64Binary")
+    val binaryValue: ByteArray? = null
+)
+
+data class TypeNumber(
+    @XmlAttribute(name="SizeInBit")
+    val sizeInBit: Int?=null,
+    @XmlAttribute(name="Type")
+    val type: ParamValueType?=null,
+    @XmlAttribute(name="MinInclusive")
+    val minInclusive: Long?=null,
+    @XmlAttribute(name="MaxInclusive")
+    val maxInclusive: Long?=null
+)
+
+enum class ParamValueType {
+    unsignedInt
+}
+
+
+class ParametersAndUnions() {
+    @field:XmlElements(
+        XmlElement(name="Parameter", type=Parameter::class),
+        XmlElement(name="Union", type=Union::class)
+    )
+    val parameterOrUnions: MutableList<Any>?=LinkedList()
+
+}
+
+data class Parameter (
+    @XmlAttribute(name="Id")
+    val id:String?=null,
+    @XmlAttribute(name="Name")
+    val name: String?=null,
+    @XmlAttribute(name="ParameterType")
+    val parameterType: String?=null,
+    @XmlAttribute(name="Text")
+    val text: String?=null,
+    @XmlAttribute(name="Access")
+    val access: Access?=null,
+    @XmlAttribute(name="Value")
+    val value: Int?=null,
+    @field:XmlElement(name="Memory")
+    val memory: Memory?=null
+)
+
+data class Union(
+    @XmlAttribute(name="SizeInBit")
+    val sizeInBit: Int?=null,
+    @field:XmlElement(name="Memory")
+    val memory: Memory?=null,
+    @field:XmlElement(name="Parameter")
+    val parameters: MutableList<ExtendedParameter>?=LinkedList()
+)
+
+data class ExtendedParameter (
+    @XmlAttribute(name="Id")
+    val id:String?=null,
+    @XmlAttribute(name="Name")
+    val name: String?=null,
+    @XmlAttribute(name="ParameterType")
+    val parameterType: String?=null,
+    @XmlAttribute(name="Text")
+    val text: String?=null,
+    @XmlAttribute(name="Access")
+    val access: Access?=null,
+    @XmlAttribute(name="Value")
+    val value: Int?=null,
+    @field:XmlElement(name="Memory")
+    val memory: Memory?=null,
+    @XmlAttribute(name="Offset")
+    val offset: Int?=null,
+    @XmlAttribute(name="BitOffset")
+    val bitOffset: Int?=null,
+    @XmlAttribute(name="DefaultUnionParameter")
+    val defaultUnionParameter: Boolean?=null
+)
+
+data class Memory (
+    @XmlIDREF
+    @XmlAttribute(name="CodeSegment")
+    val codeSegment: AbsoluteSegment?=null,
+    @XmlAttribute(name="Offset")
+    val offset:Int?=null,
+    @XmlAttribute(name="BitOffset")
+    val bitOffset:Int?=null
+)
+
+
+enum class Access{
+    None, Read, ReadWrite
+}
 
 //
 //data class MyLanguage(
@@ -196,86 +324,22 @@ class AbsoluteSegment(
 //
 
 //
+//
+//
+//
+//
+//
+//
+//}
+//
+
 //@JsonIgnoreProperties(ignoreUnknown = true)
-//data class ParameterType(val id: String, val name: String, val typeNumber:TypeNumber?, val typeRestriction: TypeRestriction?)
 //
-////@JsonIgnoreProperties(ignoreUnknown = true)
-//data class TypeRestriction(
-//    val base:String,
-//    val sizeInBit: Int,
-//    @JacksonXmlProperty(localName = "Enumeration")
-//    @JacksonXmlElementWrapper(useWrapping = false)
-//    val enumerations:List<Enumeration>
-//) {
 //
-//}
+
 //
-//data class Enumeration(val text:String, val value:Int, val id: String, val displayOrder: Int, val binaryValue: String?)
 //
-//data class TypeNumber (val sizeInBit:Int, val type: ParamValueType, val minInclusive: Long, val maxInclusive: Long ) {
 //
-//}
+
 //
-////@JsonIgnoreProperties(ignoreUnknown = true)
-////@JsonDeserialize(using=ParametersAndUnionsDeserializer::class)
-// class ParametersAndUnions() {
-//    //    @JacksonXmlProperty()
-//    @JacksonXmlProperty(localName = "Parameter")
-//    @JacksonXmlElementWrapper(useWrapping = false)
-//    var parameters: List<Parameter> =listOf()
-//        get() = field
-//        set(value){
-//            field=field+value
-//        }
-//
-//    @JacksonXmlProperty(localName = "Union")
-//    @JacksonXmlElementWrapper(useWrapping = false)
-//    var unions: List<Union> = listOf()
-//        get() = field
-//        set(value){
-//            field=field+value
-//        }
-//}
-//@JsonIgnoreProperties(ignoreUnknown = true)
-//data class Parameter (
-//    val id:String,
-//    val name: String,
-//    val parameterType: String,
-//    val text: String,
-//    val access: Access?,
-//    val value: Int?,
-//    val memory:Memory?,
-//    val englishText: String?=null
-//)
-//
-//data class Union(
-//    val sizeInBit: Int,
-//    val memory: Memory,
-//    @JacksonXmlProperty(localName = "Parameter")
-//    @JacksonXmlElementWrapper(useWrapping = false)
-//    val parameters: List<ExtendedParameter>
-//)
-//
-//data class ExtendedParameter (
-//    val id:String,
-//    val name: String,
-//    val parameterType: String,
-//    val text: String,
-//    val access: Access?,
-//    val value: Int?,
-//    val memory:Memory?,
-//    val offset: Int,
-//    val bitOffset: Int,
-//    val englishText: String?,
-//    val defaultUnionParameter: Boolean
-//)
-//
-//data class Memory (val codeSegment: String, val offset:Int, val bitOffset:Int)
-//
-//enum class ParamValueType {
-//    unsignedInt
-//}
-//
-//enum class Access{
-//    None, Read, ReadWrite
-//}
+
