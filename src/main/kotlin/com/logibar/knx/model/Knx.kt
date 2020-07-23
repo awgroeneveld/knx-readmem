@@ -159,7 +159,7 @@ class ParametersAndUnions() {
 
 }
 
-interface ParameterOrUnion{
+interface ParameterOrUnion {
     val memory: Memory?
 }
 
@@ -188,7 +188,7 @@ class Parameter(
     val bitOffset: Int? = null,
     @XmlAttribute(name = "DefaultUnionParameter")
     val defaultUnionParameter: Boolean? = null
-):ParameterOrUnion
+) : ParameterOrUnion
 
 
 data class Property(
@@ -209,7 +209,7 @@ data class Union(
     override val memory: Memory? = null,
     @field:XmlElement(name = "Parameter")
     val parameters: MutableList<Parameter>? = LinkedList()
-):ParameterOrUnion
+) : ParameterOrUnion
 
 
 data class Memory(
@@ -347,9 +347,17 @@ data class Channel(
     val items: MutableList<UiElement>? = LinkedList()
 )
 
-abstract class UiElement(
+interface UiElement {
+    fun indentString(indent: Int) = "  ".repeat(indent)
+    fun toLogString(indent: Int, translationSet: TranslationSet): String
+}
 
-)
+class TranslationSet(val translationsById: Map<String, TranslationElement>) {
+    fun getText(parameterRef: ParameterRef?): String? {
+        return if (parameterRef == null) null
+        else translationsById[parameterRef.id]?.getText()
+    }
+}
 
 data class ParameterBlock(
     @XmlAttribute(name = "Id")
@@ -366,7 +374,11 @@ data class ParameterBlock(
         XmlElement(name = "choose", type = Choose::class)
     )
     val items: MutableList<UiElement>? = LinkedList()
-) : UiElement()
+) : UiElement {
+    override fun toLogString(indent: Int, translationSet: TranslationSet): String {
+        return "${indentString(indent)}ParameterBlock ${translationSet.getText(parameterRef)}"
+    }
+}
 
 data class Choose(
     @XmlIDREF
@@ -374,19 +386,31 @@ data class Choose(
     val parameterRef: ParameterRef? = null,
     @field:XmlElement(name = "when")
     val whenToActivate: WhenToActivate? = null
-) : UiElement()
+) : UiElement {
+    override fun toLogString(indent: Int, translationSet: TranslationSet):String {
+        TODO("Not yet implemented")
+    }
+}
 
 data class ParameterRefRef(
     @XmlIDREF
     @XmlAttribute(name = "RefId")
     val parameterReference: ParameterRef? = null
-) : UiElement()
+) : UiElement {
+    override fun toLogString(indent: Int, translationSet: TranslationSet):String {
+        TODO("Not yet implemented")
+    }
+}
 
 data class ComObjectRefRef(
     @XmlIDREF
     @XmlAttribute(name = "RefId")
     val comObjectReference: ComObjectRef? = null
-) : UiElement()
+) : UiElement {
+    override fun toLogString(indent: Int, translationSet: TranslationSet):String {
+        TODO("Not yet implemented")
+    }
+}
 
 
 data class WhenToActivate(
@@ -401,32 +425,39 @@ data class WhenToActivate(
         XmlElement(name = "ParameterBlock", type = ParameterBlock::class)
     )
     val thenItems: MutableList<UiElement>? = LinkedList()
-)
+) : UiElement {
+    override fun toLogString(indent: Int, translationSet: TranslationSet):String {
+        TODO("Not yet implemented")
+    }
+}
 
 data class MyLanguage(
-    @XmlAttribute(name="Identifier")
-    val identifier: String?=null,
-    @field:XmlElement(name="TranslationUnit")
-    val translationUnit: TranslationUnit?=null
+    @XmlAttribute(name = "Identifier")
+    val identifier: String? = null,
+    @field:XmlElement(name = "TranslationUnit")
+    val translationUnit: TranslationUnit? = null
 )
 
 data class TranslationUnit(
-    @XmlAttribute(name="RefId")
-    val refId: String?=null,
-    @field:XmlElement(name="TranslationElement")
-    val translationElements: MutableList<TranslationElement>?=LinkedList()
+    @XmlAttribute(name = "RefId")
+    val refId: String? = null,
+    @field:XmlElement(name = "TranslationElement")
+    val translationElements: MutableList<TranslationElement>? = LinkedList()
 )
 
 data class TranslationElement(
-    @XmlAttribute(name="RefId")
-    val refId: String?=null,
-    @field:XmlElement(name="Translation")
-    val translations: MutableList<Translation>?=LinkedList()
-)
+    @XmlAttribute(name = "RefId")
+    val refId: String? = null,
+    @field:XmlElement(name = "Translation")
+    val translations: MutableList<Translation>? = LinkedList()
+) {
+    fun getText() = translations?.firstOrNull { it.attributeName == "Text" }?.text
+    fun getFunctionText() = translations?.firstOrNull { it.attributeName == "FunctionText" }?.text
+}
 
 data class Translation(
-    @XmlAttribute(name="AtttributeName")
-    val attributeName: String?=null,
-    @XmlAttribute(name="Text")
-    val text: String?=null
+    @XmlAttribute(name = "AtttributeName")
+    val attributeName: String? = null,
+    @XmlAttribute(name = "Text")
+    val text: String? = null
 )

@@ -3,6 +3,8 @@ package com.logibar.knx
 
 import com.logibar.knx.model.Knx
 import com.logibar.knx.model.Memory
+import com.logibar.knx.model.ParameterBlock
+import com.logibar.knx.model.TranslationSet
 import org.junit.jupiter.api.Test
 import java.awt.print.Book
 import java.io.StringWriter
@@ -23,7 +25,7 @@ class ReadXml {
 
     class MyValidationEventHandler() : ValidationEventHandler {
         val defaultValidationEventHandler = DefaultValidationEventHandler()
-        val ignoredNodes = listOf("LoadProcedures","Options")
+        val ignoredNodes = listOf("LoadProcedures", "Options")
         val regex = Pattern.compile(".*local:\"(.*)\"\\)")
 
         override fun handleEvent(event: ValidationEvent): Boolean {
@@ -83,18 +85,20 @@ class ReadXml {
         val indexes = bitset.stream()
             .toList()
         val memAddresses = indexes.map { bytePos + it }
-         val manufacturer=knx.manufacturerData!!.manufacturer
+        val manufacturer = knx.manufacturerData!!.manufacturer
         val prog = manufacturer!!.applicationPrograms!!.first()
         val codeSegment = prog.static!!.code!!.absoluteSegments!!.sortedByDescending { segment -> segment.address }
             .first { it.address!! <= memAddresses.min()!! }
-        val offset=bytePos-codeSegment.address!!
+        val offset = bytePos - codeSegment.address!!
         val offsetBits = memAddresses.map { it - codeSegment.address!! }
 
-        val translationsById=manufacturer.languages!!.first().translationUnit!!.translationElements!!.map{it.refId to it.translations}.toMap()
+        val translationSet =
+            TranslationSet(manufacturer.languages!!.first().translationUnit!!.translationElements!!.map { it.refId!! to it }
+                .toMap())
         val parameters =
             prog.static!!.parametersAndUnions!!.parameterOrUnions!!
                 .filter { it.memory != null && (it.memory as Memory).codeSegment!!.id == codeSegment.id }
-                .filter { it.memory!!.offset==offset}
+                .filter { it.memory!!.offset == offset }
 //
 //        val t=parameters.map{param->translations.firstOrNull{
 //                translationElement -> translationElement.refId==param.parameterType}}
@@ -105,6 +109,9 @@ class ReadXml {
 //                .filter { it.memory.offset==offset}
         println(parameters)
 //        println(unions)
+        val channel = prog.dynamic!!.channel!!
+        channel.items!!.filter { it is ParameterBlock }
+            .forEach { println(it.toLogString(0, translationSet)) }
     }
 
     @Test
