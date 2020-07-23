@@ -353,9 +353,20 @@ interface UiElement {
 }
 
 class TranslationSet(val translationsById: Map<String, TranslationElement>) {
+
+    fun getText(parameterRefRef: ParameterRefRef?): String? {
+        return if (parameterRefRef == null) null
+        else getText(parameterRefRef.parameterReference)
+    }
+
     fun getText(parameterRef: ParameterRef?): String? {
         return if (parameterRef == null) null
-        else translationsById[parameterRef.id]?.getText()
+        else translationsById[parameterRef.id]?.getText()?:getText(parameterRef.parameter)
+    }
+
+    fun getText(parameter: Parameter?): String?{
+        return if (parameter==null) null
+        else translationsById[parameter.id]?.getText()?:parameter.text
     }
 }
 
@@ -376,7 +387,8 @@ data class ParameterBlock(
     val items: MutableList<UiElement>? = LinkedList()
 ) : UiElement {
     override fun toLogString(indent: Int, translationSet: TranslationSet): String {
-        return "${indentString(indent)}ParameterBlock ${translationSet.getText(parameterRef)}"
+        val itemText=items?.map { it.toLogString(indent+1, translationSet) }?.joinToString(separator = "\n")
+        return "${indentString(indent)}ParameterBlock ${translationSet.getText(parameterRef)?:text}\n$itemText"
     }
 }
 
@@ -388,7 +400,7 @@ data class Choose(
     val whenToActivate: WhenToActivate? = null
 ) : UiElement {
     override fun toLogString(indent: Int, translationSet: TranslationSet):String {
-        TODO("Not yet implemented")
+        return "${indentString(indent)}Choose}"
     }
 }
 
@@ -398,7 +410,7 @@ data class ParameterRefRef(
     val parameterReference: ParameterRef? = null
 ) : UiElement {
     override fun toLogString(indent: Int, translationSet: TranslationSet):String {
-        TODO("Not yet implemented")
+        return "${indentString(indent)}Parameter ${translationSet.getText(parameterReference)}"
     }
 }
 
@@ -456,7 +468,7 @@ data class TranslationElement(
 }
 
 data class Translation(
-    @XmlAttribute(name = "AtttributeName")
+    @XmlAttribute(name = "AttributeName")
     val attributeName: String? = null,
     @XmlAttribute(name = "Text")
     val text: String? = null

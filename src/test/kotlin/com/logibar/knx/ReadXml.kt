@@ -68,11 +68,7 @@ class ReadXml {
         unmarshaller.eventHandler = (MyValidationEventHandler());
         val knx = unmarshaller.unmarshal(f) as Knx
 
-        val writer = StringWriter()
-        val marshaller = context.createMarshaller()
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.marshal(knx, writer)
-        println(writer.toString())
+//        marshall(context, knx)
 
 //        val decoded=Base64.getDecoder().decode("MAUAAAEAAAABAAAAAQABAf//AYABAQEBCAAIIAAAAAAAAQD/EAAAAAAAAAAAAAAAAAAAAAAAAAz/DP8MAAAAAAAAAAAAAAAAAAAAAAAAAAH//wGAAQEBAQgACCAAAAAAAAEA/xAAAAAAAAAAAAAAAAAgAAAAAAAM/wz/DAAAAAAAAAAAAAAAAAAAAAAAAAAB//8BgAEBAQEIAAggAAAAAAABAP8QAAAAAAAAAAAAAAAAIAAAAAAADP8M/wwAAAAAAAAAAAAAAAAAAAAAAAAAAf//AYABAQEBCAAIIAAAAAAAAQD/EAAAAAAAAAAAAAAAACAAAAAAAAz/DP8MAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAQIDBAUGBwggQGCAoMDg/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5AFd6Q/8AAQAA")
 
@@ -112,6 +108,14 @@ class ReadXml {
         val channel = prog.dynamic!!.channel!!
         channel.items!!.filter { it is ParameterBlock }
             .forEach { println(it.toLogString(0, translationSet)) }
+    }
+
+    private fun marshall(context: JAXBContext, knx: Knx) {
+        val writer = StringWriter()
+        val marshaller = context.createMarshaller()
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        marshaller.marshal(knx, writer)
+        println(writer.toString())
     }
 
     @Test
