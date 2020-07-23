@@ -106,7 +106,7 @@ class ReadXml {
         println(parameters)
 //        println(unions)
         val channel = prog.dynamic!!.channel!!
-        channel.items!!.filter { it is ParameterBlock }
+        channel.items!!
             .forEach { println(it.toLogString(0, translationSet)) }
     }
 

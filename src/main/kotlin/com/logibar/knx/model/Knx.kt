@@ -353,20 +353,22 @@ interface UiElement {
 }
 
 class TranslationSet(val translationsById: Map<String, TranslationElement>) {
-
+    fun String.replaceCrLf():String{
+        return this.replace("\r"," ").replace("\n", "")
+    }
     fun getText(parameterRefRef: ParameterRefRef?): String? {
         return if (parameterRefRef == null) null
-        else getText(parameterRefRef.parameterReference)
+        else (getText(parameterRefRef.parameterReference))?.replaceCrLf()
     }
 
     fun getText(parameterRef: ParameterRef?): String? {
         return if (parameterRef == null) null
-        else translationsById[parameterRef.id]?.getText()?:getText(parameterRef.parameter)
+        else (translationsById[parameterRef.id]?.getText()?:getText(parameterRef.parameter))?.replaceCrLf()
     }
 
     fun getText(parameter: Parameter?): String?{
         return if (parameter==null) null
-        else translationsById[parameter.id]?.getText()?:parameter.text
+        else ((translationsById[parameter.id]?.getText()?:parameter.text)+ " (value: ${parameter.value})")?.replaceCrLf()
     }
 }
 
@@ -397,10 +399,12 @@ data class Choose(
     @XmlAttribute(name = "ParamRefId")
     val parameterRef: ParameterRef? = null,
     @field:XmlElement(name = "when")
-    val whenToActivate: WhenToActivate? = null
+    val whenToActivate: MutableList<WhenToActivate>? = LinkedList()
 ) : UiElement {
     override fun toLogString(indent: Int, translationSet: TranslationSet):String {
-        return "${indentString(indent)}Choose}"
+        val itemsText= whenToActivate?.joinToString("\n") { it.toLogString(indent + 1, translationSet) }
+        return "${indentString(indent)}Choose parameter ${translationSet.getText(parameterRef)}\n" +
+                "$itemsText"
     }
 }
 
@@ -420,7 +424,11 @@ data class ComObjectRefRef(
     val comObjectReference: ComObjectRef? = null
 ) : UiElement {
     override fun toLogString(indent: Int, translationSet: TranslationSet):String {
-        TODO("Not yet implemented")
+        val refTrans=translationSet.translationsById[comObjectReference!!.id]
+        val comTrans=translationSet.translationsById[comObjectReference!!.comObject!!.id]
+        val text=refTrans?.getText()?:comTrans?.getText()
+        val functionText=refTrans?.getFunctionText()?:comTrans?.getFunctionText()
+        return "${indentString(indent)} Comobject: $text:$functionText, object number: ${comObjectReference.comObject!!.number}"
     }
 }
 
@@ -439,7 +447,8 @@ data class WhenToActivate(
     val thenItems: MutableList<UiElement>? = LinkedList()
 ) : UiElement {
     override fun toLogString(indent: Int, translationSet: TranslationSet):String {
-        TODO("Not yet implemented")
+        val itemText= thenItems?.joinToString(separator = "\n") { it.toLogString(indent + 1, translationSet) }
+        return "${indentString(indent)}WhenToActivate, default: $default, test: $test\n$itemText"
     }
 }
 
