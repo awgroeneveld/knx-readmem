@@ -9,6 +9,7 @@ import java.util.*
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.JAXBException
 import javax.xml.bind.Marshaller
+import javax.xml.bind.helpers.DefaultValidationEventHandler
 import javax.xml.stream.XMLInputFactory
 import kotlin.experimental.xor
 import kotlin.streams.toList
@@ -17,7 +18,10 @@ class ReadXml {
     fun readXML() {
          val context = JAXBContext.newInstance(Knx::class.java);
         val f = this::class.java.getResourceAsStream("/dimmer.xml")
-        val knx = context.createUnmarshaller().unmarshal(f) as Knx
+
+        val unmarshaller = context.createUnmarshaller()
+        unmarshaller.eventHandler=(DefaultValidationEventHandler());
+        val knx = unmarshaller.unmarshal(f) as Knx
 
         val writer=StringWriter()
         val marshaller=context.createMarshaller()

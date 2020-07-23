@@ -44,8 +44,9 @@ data class ApplicationProgram(
     @XmlAttribute(name = "Id")
     val id: String? = null,
     @field:XmlElement(name = "Static")
-    val static: Static? = null
-//    val dynamic: Dynamic?=null
+    val static: Static? = null,
+    @field:XmlElement(name = "Dynamic")
+    val dynamic: Dynamic? = null
 )
 
 data class Static(
@@ -55,15 +56,19 @@ data class Static(
     @field:XmlElement(name = "ParameterType")
     val parameterTypes: MutableList<ParameterType>? = LinkedList(),
     @field:XmlElement(name = "Parameters")
-    val parametersAndUnions:ParametersAndUnions?=null
-//    @JacksonXmlElementWrapper
-//    val parameterRefs: List<ParameterRef>,
-//
-//    val comObjectTable:ComObjectTable,
-//    @JacksonXmlElementWrapper
-//    val comObjectRefs: List<ComObjectRef>,
-//    val addressTable: AddressTable
-
+    val parametersAndUnions: ParametersAndUnions? = null,
+    @field:XmlElementWrapper(name = "ParameterRefs")
+    @field:XmlElement(name = "ParameterRef")
+    val parameterRefs: MutableList<ParameterRef>? = LinkedList(),
+    @field:XmlElement(name = "ComObjectTable")
+    val comObjectTable: ComObjectTable? = null,
+    @field:XmlElementWrapper(name = "ComObjectRefs")
+    @field:XmlElement(name = "ComObjectRef")
+    val comObjectRefs: MutableList<ComObjectRef>? = LinkedList(),
+    @field:XmlElement(name = "AddressTable")
+    val addressTable: AddressOrAssociationTable? = null,
+    @field:XmlElement(name = "AssociationTable")
+    val associationTable: AddressOrAssociationTable? = null
 )
 
 data class Code(
@@ -81,11 +86,15 @@ class AbsoluteSegment(
     val size: Int? = null,
     @field:XmlElement(name = "Data")
     @field:XmlSchemaType(name = "base64Binary")
-    val data: ByteArray? = null
+    val data: ByteArray? = null,
+    @field:XmlElement(name = "Mask")
+    @field:XmlSchemaType(name = "base64Binary")
+    val mask: ByteArray? = null
 )
 
 
 data class ParameterType(
+    @XmlID
     @XmlAttribute(name = "Id")
     val id: String? = null,
     @XmlAttribute(name = "Name")
@@ -93,8 +102,12 @@ data class ParameterType(
     @field:XmlElement(name = "TypeNumber")
     val typeNumber: TypeNumber? = null,
     @field:XmlElement(name = "TypeRestriction")
-    val typeRestriction: TypeRestriction? = null
+    val typeRestriction: TypeRestriction? = null,
+    @field:XmlElement(name = "TypeNone")
+    val typeNone: TypeNone? = null
 )
+
+class TypeNone()
 
 data class TypeRestriction(
     @XmlAttribute(name = "Base")
@@ -102,7 +115,7 @@ data class TypeRestriction(
     @XmlAttribute(name = "SizeInBit")
     val sizeInBit: Int? = null,
     @field:XmlElement(name = "Enumeration")
-    val enumerations: MutableList<Enumeration>?=LinkedList()
+    val enumerations: MutableList<Enumeration>? = LinkedList()
 )
 
 class Enumeration(
@@ -120,14 +133,14 @@ class Enumeration(
 )
 
 data class TypeNumber(
-    @XmlAttribute(name="SizeInBit")
-    val sizeInBit: Int?=null,
-    @XmlAttribute(name="Type")
-    val type: ParamValueType?=null,
-    @XmlAttribute(name="MinInclusive")
-    val minInclusive: Long?=null,
-    @XmlAttribute(name="MaxInclusive")
-    val maxInclusive: Long?=null
+    @XmlAttribute(name = "SizeInBit")
+    val sizeInBit: Int? = null,
+    @XmlAttribute(name = "Type")
+    val type: ParamValueType? = null,
+    @XmlAttribute(name = "MinInclusive")
+    val minInclusive: Long? = null,
+    @XmlAttribute(name = "MaxInclusive")
+    val maxInclusive: Long? = null
 )
 
 enum class ParamValueType {
@@ -137,76 +150,264 @@ enum class ParamValueType {
 
 class ParametersAndUnions() {
     @field:XmlElements(
-        XmlElement(name="Parameter", type=Parameter::class),
-        XmlElement(name="Union", type=Union::class)
+        XmlElement(name = "Parameter", type = Parameter::class),
+        XmlElement(name = "Union", type = Union::class)
     )
-    val parameterOrUnions: MutableList<Any>?=LinkedList()
+    val parameterOrUnions: MutableList<Any>? = LinkedList()
 
 }
 
-data class Parameter (
-    @XmlAttribute(name="Id")
-    val id:String?=null,
-    @XmlAttribute(name="Name")
-    val name: String?=null,
-    @XmlAttribute(name="ParameterType")
-    val parameterType: String?=null,
-    @XmlAttribute(name="Text")
-    val text: String?=null,
-    @XmlAttribute(name="Access")
-    val access: Access?=null,
-    @XmlAttribute(name="Value")
-    val value: Int?=null,
-    @field:XmlElement(name="Memory")
-    val memory: Memory?=null
+data class Parameter(
+    @XmlID
+    @XmlAttribute(name = "Id")
+    val id: String? = null,
+    @XmlAttribute(name = "Name")
+    val name: String? = null,
+    @XmlIDREF
+    @XmlAttribute(name = "ParameterType")
+    val parameterType: ParameterType? = null,
+    @XmlAttribute(name = "Text")
+    val text: String? = null,
+    @XmlAttribute(name = "Access")
+    val access: Access? = null,
+    @XmlAttribute(name = "Value")
+    val value: Int? = null,
+    @field:XmlElement(name = "Memory")
+    val memory: Memory? = null,
+    @field: XmlElement(name = "Property")
+    val property: Property?=null
 )
 
-data class Union(
-    @XmlAttribute(name="SizeInBit")
-    val sizeInBit: Int?=null,
-    @field:XmlElement(name="Memory")
-    val memory: Memory?=null,
-    @field:XmlElement(name="Parameter")
-    val parameters: MutableList<ExtendedParameter>?=LinkedList()
-)
-
-data class ExtendedParameter (
-    @XmlAttribute(name="Id")
-    val id:String?=null,
-    @XmlAttribute(name="Name")
-    val name: String?=null,
-    @XmlAttribute(name="ParameterType")
-    val parameterType: String?=null,
-    @XmlAttribute(name="Text")
-    val text: String?=null,
-    @XmlAttribute(name="Access")
-    val access: Access?=null,
-    @XmlAttribute(name="Value")
-    val value: Int?=null,
-    @field:XmlElement(name="Memory")
-    val memory: Memory?=null,
+data class Property(
+    @XmlAttribute(name="ObjectIndex")
+    val objectIndex: Int?=null,
+    @XmlAttribute(name="PropertyId")
+    val propertyId: Int?=null,
     @XmlAttribute(name="Offset")
     val offset: Int?=null,
     @XmlAttribute(name="BitOffset")
-    val bitOffset: Int?=null,
-    @XmlAttribute(name="DefaultUnionParameter")
-    val defaultUnionParameter: Boolean?=null
+    val bitOffset: Int?=null
 )
 
-data class Memory (
+data class Union(
+    @XmlAttribute(name = "SizeInBit")
+    val sizeInBit: Int? = null,
+    @field:XmlElement(name = "Memory")
+    val memory: Memory? = null,
+    @field:XmlElement(name = "Parameter")
+    val parameters: MutableList<ExtendedParameter>? = LinkedList()
+)
+
+data class ExtendedParameter(
+    @XmlAttribute(name = "Id")
+    val id: String? = null,
+    @XmlAttribute(name = "Name")
+    val name: String? = null,
+    @XmlAttribute(name = "ParameterType")
+    val parameterType: String? = null,
+    @XmlAttribute(name = "Text")
+    val text: String? = null,
+    @XmlAttribute(name = "Access")
+    val access: Access? = null,
+    @XmlAttribute(name = "Value")
+    val value: Int? = null,
+    @field:XmlElement(name = "Memory")
+    val memory: Memory? = null,
+    @XmlAttribute(name = "Offset")
+    val offset: Int? = null,
+    @XmlAttribute(name = "BitOffset")
+    val bitOffset: Int? = null,
+    @XmlAttribute(name = "DefaultUnionParameter")
+    val defaultUnionParameter: Boolean? = null
+)
+
+data class Memory(
     @XmlIDREF
-    @XmlAttribute(name="CodeSegment")
-    val codeSegment: AbsoluteSegment?=null,
-    @XmlAttribute(name="Offset")
-    val offset:Int?=null,
-    @XmlAttribute(name="BitOffset")
-    val bitOffset:Int?=null
+    @XmlAttribute(name = "CodeSegment")
+    val codeSegment: AbsoluteSegment? = null,
+    @XmlAttribute(name = "Offset")
+    val offset: Int? = null,
+    @XmlAttribute(name = "BitOffset")
+    val bitOffset: Int? = null
 )
 
 
-enum class Access{
+enum class Access {
     None, Read, ReadWrite
 }
+
+
+data class ParameterRef(
+    @XmlID
+    @XmlAttribute(name = "Id")
+    val id: String? = null,
+    @XmlIDREF
+    @XmlAttribute(name = "RefId")
+    val parameter: Parameter? = null,
+    @XmlAttribute(name = "Tag")
+    val tag: Int? = null,
+    @XmlAttribute(name = "DisplayOrder")
+    val displayOrder: Int? = null,
+    @XmlAttribute(name = "Value")
+    val value: Int? = null,
+    @XmlAttribute(name = "Text")
+    val text: String? = null,
+    @XmlAttribute(name = "Access")
+    val access: Access? = null,
+    @XmlAttribute(name = "Name")
+    val name: String? = null
+)
+
+
+data class ComObjectTable(
+    @XmlIDREF
+    @XmlAttribute
+    val codeSegment: AbsoluteSegment? = null,
+    @XmlAttribute
+    val offset: Int? = null,
+    @field:XmlElement(name = "ComObject")
+    val comObjects: MutableList<ComObject>? = LinkedList()
+)
+
+data class ComObject(
+    @XmlID
+    @XmlAttribute(name = "Id")
+    val id: String? = null,
+    @XmlAttribute(name = "Name")
+    val name: String? = null,
+    @XmlAttribute(name = "Text")
+    val text: String? = null,
+    @XmlAttribute(name = "Number")
+    val number: Int? = null,
+    @XmlAttribute(name = "FunctionText")
+    val functionText: String? = null,
+    @XmlAttribute(name = "ObjectSize")
+    val objectSize: String? = null,
+    @XmlAttribute(name = "ReadFlag")
+    val readFlag: EnabledDisabled? = null,
+    @XmlAttribute(name = "WriteFlag")
+    val writeFlag: EnabledDisabled? = null,
+    @XmlAttribute(name = "CommunicationFlag")
+    val communicationFlag: EnabledDisabled? = null,
+    @XmlAttribute(name = "TransmitFlag")
+    val transmitFlag: EnabledDisabled? = null,
+    @XmlAttribute(name = "UpdateFlag")
+    val updateFlag: EnabledDisabled? = null,
+    @XmlAttribute(name = "ReadOnInitFlag")
+    val readOnInitFlag: EnabledDisabled? = null
+)
+
+enum class EnabledDisabled {
+    Enabled, Disabled
+}
+
+
+data class ComObjectRef(
+    @XmlID
+    @XmlAttribute(name = "Id")
+    val id: String? = null,
+    @XmlIDREF
+    @XmlAttribute(name = "RefId")
+    val comObject: ComObject? = null,
+    @XmlAttribute(name = "Tag")
+    val tag: Int? = null,
+    @XmlAttribute(name = "Text")
+    val text: String? = null,
+    @XmlAttribute(name = "FunctionText")
+    val functionText: String? = null,
+    @XmlAttribute(name = "ReadFlag")
+    val readFlag: EnabledDisabled? = null,
+//    val writeFlag: EnabledDisabled,
+//    val communicationFlag: EnabledDisabled,
+    @XmlAttribute(name = "TransmitFlag")
+    val transmitFlag: EnabledDisabled? = null
+//    val updateFlag: EnabledDisabled,
+//    val readOnInitFlag: EnabledDisabled
+)
+
+data class AddressOrAssociationTable(
+    @XmlIDREF
+    @XmlAttribute(name = "CodeSegment")
+    val codeSegment: AbsoluteSegment? = null,
+    @XmlAttribute(name = "Offset")
+    val offset: Int? = null,
+    @XmlAttribute(name = "MaxEntries")
+    val maxEntries: Int? = null
+)
+
+data class Dynamic(
+    @field:XmlElement(name = "Channel")
+    val channel: Channel? = null
+)
+
+data class Channel(
+    @XmlAttribute(name = "Name")
+    val name: String? = null,
+    @XmlAttribute(name = "Text")
+    val text: String? = null,
+    @XmlAttribute(name = "Number")
+    val number: Int? = null,
+    @XmlAttribute(name = "Id")
+    val id: String? = null,
+    @field:XmlElements(
+        XmlElement(name = "ParameterBlock", type = ParameterBlock::class),
+        XmlElement(name = "choose", type = Choose::class)
+    )
+    val items: MutableList<UiElement>? = LinkedList()
+)
+
+abstract class UiElement(
+
+)
+
+data class ParameterBlock(
+    @XmlAttribute(name = "Id")
+    val id: String? = null,
+    @XmlAttribute(name = "Name")
+    val name: String? = null,
+    @XmlAttribute(name = "Text")
+    val text: String? = null,
+    @XmlIDREF
+    @XmlAttribute(name = "ParamRefId")
+    val parameterRef: ParameterRef? = null,
+    @field: XmlElements(
+        XmlElement(name = "ParameterRefRef", type = ParameterRefRef::class)
+    )
+    val items: MutableList<UiElement>? = LinkedList()
+) : UiElement()
+
+data class Choose(
+    @XmlIDREF
+    @XmlAttribute(name = "ParamRefId")
+    val parameterRef: ParameterRef? = null,
+    @field:XmlElement(name = "when")
+    val whenToActivate: WhenToActivate? = null
+) : UiElement()
+
+data class ParameterRefRef(
+    @XmlIDREF
+    @XmlAttribute(name = "RefId")
+    val parameterReference: ParameterRef? = null
+) : UiElement()
+
+data class ComObjectRefRef(
+    @XmlIDREF
+    @XmlAttribute(name = "RefId")
+    val comObjectReference: ComObjectRef? = null
+) : UiElement()
+
+
+data class WhenToActivate(
+    @XmlAttribute
+    val test: Int? = null,
+    @XmlAttribute
+    val default: Boolean? = null,
+    @field:XmlElements(
+        XmlElement(name = "ParameterRefRef", type = ParameterRefRef::class),
+        XmlElement(name = "ComObjectRefRef", type = ComObjectRefRef::class)
+    )
+    val thenItems: MutableList<UiElement>? = LinkedList()
+)
 
 //
 //data class MyLanguage(
@@ -241,73 +442,15 @@ enum class Access{
 
 //
 //@JsonIgnoreProperties(ignoreUnknown = true)
-//data class Dynamic(
-//    @XmlElement
-//    val channel: JAXBElement<*>
-//)
+
 //
 //
 //
 //
 //
-//data class AddressTable(
-//    val codeSegment: String,
-//    val offset: Int,
-//    val maxEntries: Int
-//) {
+
 //
-//}
 //
-//data class AssociationTable(
-//    val codeSegment: String,
-//    val offset: Int,
-//    val maxEntries: Int
-//) {
-//
-//}
-//
-//data class ComObjectTable(
-//    val codeSegment: String,
-//    val offset: Int,
-//    @JacksonXmlProperty(localName = "ComObject")
-//    @JacksonXmlElementWrapper(useWrapping = false)
-//    val comObjects: List<ComObject>
-//) {
-//
-//}
-//
-//data class ComObjectRef(
-//    val id: String,
-//    val refId: String,
-//    val tag: Int,
-//    val text: String?,
-//    val functionText: String?,
-//    val readFlag: EnabledDisabled?,
-////    val writeFlag: EnabledDisabled,
-////    val communicationFlag: EnabledDisabled,
-//    val transmitFlag:EnabledDisabled?
-////    val updateFlag: EnabledDisabled,
-////    val readOnInitFlag: EnabledDisabled
-//)
-//
-//data class ComObject(
-//    val id: String,
-//    val name: String,
-//    val text: String,
-//    val number: Int,
-//    val functionText: String,
-//    val objectSize: String,
-//    val readFlag: EnabledDisabled,
-//    val writeFlag: EnabledDisabled,
-//    val communicationFlag: EnabledDisabled,
-//    val transmitFlag:EnabledDisabled,
-//    val updateFlag: EnabledDisabled,
-//    val readOnInitFlag: EnabledDisabled
-//)
-//
-//enum class EnabledDisabled{
-//    Enabled, Disabled
-//}
 //
 //data class ParameterRef(
 //    val id: String,
