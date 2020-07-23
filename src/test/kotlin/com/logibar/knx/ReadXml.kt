@@ -2,6 +2,7 @@ package com.logibar.knx
 
 
 import com.logibar.knx.model.Knx
+import com.logibar.knx.model.Memory
 import org.junit.jupiter.api.Test
 import java.awt.print.Book
 import java.io.StringWriter
@@ -82,26 +83,18 @@ class ReadXml {
         val indexes = bitset.stream()
             .toList()
         val memAddresses = indexes.map { bytePos + it }
-        // val manufacturer=knx.manufacturerData.manufacturer
-//        val prog = manufacturer.applicationPrograms.first()
-//        val codeSegment = prog.static.code.absoluteSegments.sortedByDescending { segment -> segment.address }
-//            .first { it.address <= memAddresses.min()!! }
-//        val offset=bytePos-codeSegment.address
-//        val offsetBits = memAddresses.map { it - codeSegment.address }
-//
-//        val translations=manufacturer.languages.first().translationUnit.translationElements
-//        val parameters =
-//            prog.static.parametersAndUnions.parameters
-//                .filter { it.memory != null && it.memory!!.codeSegment == codeSegment.id }
-//                .filter { it.memory!!.offset==offset}
-//        val translatedParameters=parameters
-//            .map{param->param.copy(englishText = translations.firstOrNull{
-//                    translationElement -> translationElement.refId==param.parameterType}
-//                ?.translations
-//                ?.sortedBy { translation ->  translation.attributeName }
-//                ?.firstOrNull()
-//                ?.text)
-//            }
+         val manufacturer=knx.manufacturerData!!.manufacturer
+        val prog = manufacturer!!.applicationPrograms!!.first()
+        val codeSegment = prog.static!!.code!!.absoluteSegments!!.sortedByDescending { segment -> segment.address }
+            .first { it.address!! <= memAddresses.min()!! }
+        val offset=bytePos-codeSegment.address!!
+        val offsetBits = memAddresses.map { it - codeSegment.address!! }
+
+        val translationsById=manufacturer.languages!!.first().translationUnit!!.translationElements!!.map{it.refId to it.translations}.toMap()
+        val parameters =
+            prog.static!!.parametersAndUnions!!.parameterOrUnions!!
+                .filter { it.memory != null && (it.memory as Memory).codeSegment!!.id == codeSegment.id }
+                .filter { it.memory!!.offset==offset}
 //
 //        val t=parameters.map{param->translations.firstOrNull{
 //                translationElement -> translationElement.refId==param.parameterType}}
@@ -110,7 +103,7 @@ class ReadXml {
 //            prog.static.parametersAndUnions.unions
 //                .filter {it.memory.codeSegment == codeSegment.id }
 //                .filter { it.memory.offset==offset}
-//        println(parameters)
+        println(parameters)
 //        println(unions)
     }
 

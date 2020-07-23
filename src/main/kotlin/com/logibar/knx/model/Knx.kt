@@ -155,10 +155,13 @@ class ParametersAndUnions() {
         XmlElement(name = "Parameter", type = Parameter::class),
         XmlElement(name = "Union", type = Union::class)
     )
-    val parameterOrUnions: MutableList<Any>? = LinkedList()
+    val parameterOrUnions: MutableList<ParameterOrUnion>? = LinkedList()
 
 }
 
+interface ParameterOrUnion{
+    val memory: Memory?
+}
 
 class Parameter(
     @XmlID
@@ -176,7 +179,7 @@ class Parameter(
     @XmlAttribute(name = "Value")
     val value: Int? = null,
     @field:XmlElement(name = "Memory")
-    val memory: Memory? = null,
+    override val memory: Memory? = null,
     @field: XmlElement(name = "Property")
     val property: Property? = null,
     @XmlAttribute(name = "Offset")
@@ -185,7 +188,7 @@ class Parameter(
     val bitOffset: Int? = null,
     @XmlAttribute(name = "DefaultUnionParameter")
     val defaultUnionParameter: Boolean? = null
-)
+):ParameterOrUnion
 
 
 data class Property(
@@ -203,10 +206,10 @@ data class Union(
     @XmlAttribute(name = "SizeInBit")
     val sizeInBit: Int? = null,
     @field:XmlElement(name = "Memory")
-    val memory: Memory? = null,
+    override val memory: Memory? = null,
     @field:XmlElement(name = "Parameter")
     val parameters: MutableList<Parameter>? = LinkedList()
-)
+):ParameterOrUnion
 
 
 data class Memory(
