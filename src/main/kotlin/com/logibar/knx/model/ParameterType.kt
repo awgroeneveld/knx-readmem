@@ -16,4 +16,12 @@ data class ParameterType(
     val typeRestriction: TypeRestriction? = null,
     @field:XmlElement(name = "TypeNone")
     val typeNone: TypeNone? = null
-)
+){
+    fun getSizeInBits(): Int {
+        if (typeNumber!=null)
+            return typeNumber.sizeInBit!!
+        if (typeRestriction!=null)
+            return typeRestriction.sizeInBit!!
+        return 0
+    }
+}
