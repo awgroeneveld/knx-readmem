@@ -1,13 +1,23 @@
 package com.logibar.knx
 
 
+import com.logibar.knx.model.AbsoluteSegment
 import com.logibar.knx.model.Knx
 import com.logibar.knx.model.Memory
 import com.logibar.knx.model.ParameterBlock
 import com.logibar.knx.model.TranslationSet
+import com.logibar.knx.util.ParamaterMemoryUtil
 import org.junit.jupiter.api.Test
+import tuwien.auto.calimero.IndividualAddress
+import tuwien.auto.calimero.link.KNXNetworkLinkIP
+import tuwien.auto.calimero.link.medium.TPSettings
+import tuwien.auto.calimero.mgmt.ManagementClientImpl
 import java.awt.print.Book
 import java.io.StringWriter
+import java.lang.Exception
+import java.lang.Integer.min
+import java.net.InetSocketAddress
+import java.nio.ByteBuffer
 import java.util.*
 import java.util.regex.Pattern
 import javax.xml.bind.JAXBContext
@@ -59,6 +69,45 @@ class ReadXml {
 
     }
 
+    fun readCodeSegment(codeSegment: AbsoluteSegment): BitSet {
+        println("Reading segment starting at ${codeSegment.address}")
+        val buf = ByteBuffer.allocate(codeSegment.size!!)
+        val lineAddress = IndividualAddress("1.1.10")
+        val localHost = "172.19.1.51"
+        val gateway = "172.19.4.10"
+        val networkLink = KNXNetworkLinkIP.newTunnelingLink(
+            InetSocketAddress(localHost, 0),
+            InetSocketAddress(gateway, 3671),
+            false,
+            TPSettings.TP1
+        )
+        val client = ManagementClientImpl(networkLink)
+        val dest = client.createDestination(lineAddress,true)
+        var startAddress = codeSegment.address!!
+        val codeSegmentEndAddress = codeSegment.endAddress()
+        val numBytes=4
+        var bytes = min(codeSegmentEndAddress - startAddress, numBytes)
+        try {
+            while (bytes != 0) {
+                val x = client.readMemory(dest, startAddress, bytes)
+                if (x.size < bytes) {
+                    throw Exception("Read less bytes than expected in segment: ${codeSegment.id}, start address ${startAddress}, bytes $bytes")
+                }
+
+                buf.put(startAddress - codeSegment.address!!, x)
+                startAddress += bytes
+                Thread.sleep(50)
+                bytes = min(codeSegmentEndAddress - startAddress, numBytes)
+            }
+        } catch (e: Throwable) {
+            println(e.message)
+        } finally {
+            dest.destroy()
+            client.detach()
+        }
+        return BitSet.valueOf(buf)
+    }
+
     @Test
     fun readXML() {
         val context = JAXBContext.newInstance(Knx::class.java);
@@ -78,12 +127,20 @@ class ReadXml {
         val changes = device.xor(sw)
 
         val bitset = BitSet.valueOf(ByteArray(1) { changes })
+
         val indexes = bitset.stream()
             .toList()
         val memAddresses = indexes.map { bytePos + it }
         val manufacturer = knx.manufacturerData!!.manufacturer
         val prog = manufacturer!!.applicationPrograms!!.first()
-        val codeSegment = prog.static!!.code!!.absoluteSegments!!.sortedByDescending { segment -> segment.address }
+        val codeSegments = prog.static!!.code!!.absoluteSegments!!
+
+        val inputByCodeSegment = prog.static!!.parametersAndUnions!!.parameterOrUnions!!.filter { it.memory!=null }.map{it.memory!!.codeSegment!!}.distinct()
+            .map { it to readCodeSegment(it) }
+            .toMap()
+
+
+        val codeSegment = codeSegments.sortedByDescending { segment -> segment.address }
             .first { it.address!! <= memAddresses.min()!! }
         val offset = bytePos - codeSegment.address!!
         val offsetBits = memAddresses.map { it - codeSegment.address!! }
@@ -103,6 +160,24 @@ class ReadXml {
 //            prog.static.parametersAndUnions.unions
 //                .filter {it.memory.codeSegment == codeSegment.id }
 //                .filter { it.memory.offset==offset}
+        val pmu = ParamaterMemoryUtil(knx).paramaterMemoryById
+
+        pmu.values.forEach { parameterMemory-> val bitSet=inputByCodeSegment[parameterMemory.segment]!!
+            val extractedBitSet=bitSet[parameterMemory.relativeOffset, parameterMemory.relativeOffset+parameterMemory.numberOfBits+1]
+            val value=if (extractedBitSet.length()==0) 0 else extractedBitSet.toLongArray()[0].toInt()
+            parameterMemory.value=value
+        }
+
+        val deviceChanges=pmu.entries.filter { it.value.defaultValue!=it.value.value }
+
+        val x = LinkedList(pmu.values.sortedBy { it.startPosInBits() }).mapIndexed { index, it -> index to it }
+        val nonconsecutive =
+            x.filter { if (it.first == 0) false else it.second.startPosInBits() != x[it.first - 1].second.endPosInBits() }
+        val endOnByte = x.filter { it.second.endPosInBits() % 8 == 0L }
+        val startOnByte = x.filter { it.second.startPosInBits() % 8 == 0L }
+
+//        val startOnByteNew = pmu.values.sta
+
         println(parameters)
 //        println(unions)
         val channel = prog.dynamic!!.channel!!

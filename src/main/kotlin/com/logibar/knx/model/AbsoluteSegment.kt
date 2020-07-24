@@ -19,4 +19,6 @@ class AbsoluteSegment(
     @field:XmlElement(name = "Mask")
     @field:XmlSchemaType(name = "base64Binary")
     val mask: ByteArray? = null
-)
+){
+    fun endAddress()=this.address!!+this.size!!
+}
