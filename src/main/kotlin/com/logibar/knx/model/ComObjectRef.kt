@@ -25,6 +25,8 @@ data class ComObjectRef(
     val transmitFlag: EnabledDisabled? = null
 //    val updateFlag: EnabledDisabled,
 //    val readOnInitFlag: EnabledDisabled
-){
-    var translatedText: String?=null
+) {
+
+    var translation: String? = null
+    var functionTranslation: String? = null
 }

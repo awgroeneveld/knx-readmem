@@ -14,41 +14,16 @@ interface UiElementVisitor {
     fun visit(whenToActivate: WhenToActivate)
 }
 
-class UIElementTranslator(private val translationsById: Map<String, TranslationElement>) : UiElementVisitor {
-    private fun getText(id: String?): String? =
-        translationsById[id!!]?.getText()
-
-
-    private fun getText(parameterReference: ParameterRef): String? =
-        getText(parameterReference.id) ?: getText(parameterReference.parameter!!) ?:parameterReference.text
-
-    private fun getText(parameter: Parameter): String? =
-        getText(parameter.id)?:parameter.text
-
-    private fun getText(comObjectReference: ComObjectRef) =
-        getText(comObjectReference.id) ?: getText(comObjectReference.comObject!!) ?:comObjectReference.text
-
-    private fun getText(comObject: ComObject) =
-        getText(comObject.id)?:comObject.text
+class UIElementTranslator(private val translationSet: TranslationSet) : UiElementVisitor {
 
     override fun visit(parameterBlock: ParameterBlock) {
-        parameterBlock.translatedText = getText(parameterBlock.id)
-            ?: (if (parameterBlock.parameterRef == null) null else getText(parameterBlock.parameterRef))
+        parameterBlock.translatedText = translationSet.getText(parameterBlock.id!!)
+            ?:parameterBlock.parameterRef?.translation
     }
 
     override fun visit(choose: Choose) = Unit
-
-    override fun visit(comObjectRefRef: ComObjectRefRef) {
-        val comObjectReference = comObjectRefRef.comObjectReference!!
-        comObjectReference.translatedText = getText(comObjectReference)
-    }
-
-
-    override fun visit(parameterRefRef: ParameterRefRef) {
-        val parameterReference = parameterRefRef.parameterReference!!
-        parameterReference.translatedText = getText(parameterReference)
-    }
-
+    override fun visit(comObjectRefRef: ComObjectRefRef)=Unit
+    override fun visit(parameterRefRef: ParameterRefRef) =Unit
     override fun visit(whenToActivate: WhenToActivate) = Unit
 }
 

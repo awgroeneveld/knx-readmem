@@ -24,5 +24,5 @@ data class ParameterRef(
     @XmlAttribute(name = "Name")
     val name: String? = null
 ) {
-    var translatedText: String?=null
+    var translation: String?=null
 }

@@ -39,4 +39,7 @@ data class WhenToActivate(
         visitor.visit(this)
         thenItems!!.forEach { it.accept(visitor) }
     }
+
+    fun isActivated(value: Int?)=
+        (default!=null && default) || (test!=null && test==value)
 }

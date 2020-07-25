@@ -29,4 +29,7 @@ data class ComObject(
     val updateFlag: EnabledDisabled? = null,
     @XmlAttribute(name = "ReadOnInitFlag")
     val readOnInitFlag: EnabledDisabled? = null
-)
+){
+    var translation: String?=null
+    var functionTranslation: String? =null
+}

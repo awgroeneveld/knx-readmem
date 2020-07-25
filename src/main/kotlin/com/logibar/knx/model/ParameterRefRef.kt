@@ -11,7 +11,7 @@ data class ParameterRefRef(
     override fun toLogString(indent: Int, translationSet: TranslationSet):String {
         val parameter=parameterReference!!.parameter!!
         val restriction=parameter.parameterType!!.typeRestriction
-        var parameterText="Value: ${parameter.value}"
+        var parameterText="Value: ${parameterReference.value}, underlying parameter: ${parameter.value}"
         if (restriction!=null) {
             val currentEnum=restriction.enumerations!!.first { it.value==parameter.value }
 

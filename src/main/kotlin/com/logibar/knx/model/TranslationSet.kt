@@ -1,6 +1,14 @@
 package com.logibar.knx.model
 
 class TranslationSet(val translationsById: Map<String, TranslationElement>) {
+    fun getText(id: String): String? {
+        return translationsById[id]?.getText()
+    }
+
+    fun getFunctionText(id: String): String? {
+        return translationsById[id]?.getFunctionText()
+    }
+
     fun String.replaceCrLf(indent:String):String{
         return this.replace("\r\n", "\n$indent"+" ".repeat("Parameter ".length))
     }

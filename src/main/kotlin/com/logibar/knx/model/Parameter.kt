@@ -30,4 +30,8 @@ class Parameter(
     val bitOffset: Int? = null,
     @XmlAttribute(name = "DefaultUnionParameter")
     val defaultUnionParameter: Boolean? = null
-) : ParameterOrUnion
+) : ParameterOrUnion{
+    var translation:String?=null
+
+
+}

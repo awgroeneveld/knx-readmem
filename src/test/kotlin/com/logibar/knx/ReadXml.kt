@@ -4,6 +4,7 @@ package com.logibar.knx
 import com.logibar.knx.model.AbsoluteSegment
 import com.logibar.knx.model.Knx
 import com.logibar.knx.model.Memory
+import com.logibar.knx.model.TranslateExtensions.translate
 import com.logibar.knx.model.TranslationSet
 import com.logibar.knx.model.UIElementTranslator
 import com.logibar.knx.util.ParamaterMemoryUtil
@@ -233,7 +234,8 @@ class ReadXml {
         }
 
         val channel = prog.dynamic!!.channel!!
-        channel.accept(UIElementTranslator(translationsById))
+        prog.static!!.translate(translationSet)
+        channel.accept(UIElementTranslator(translationSet))
 
 
         channel.items!!

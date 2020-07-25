@@ -13,7 +13,7 @@ data class Choose(
     val whenToActivate: MutableList<WhenToActivate>? = LinkedList()
 ) : UiElement {
     override fun toLogString(indent: Int, translationSet: TranslationSet):String {
-        val itemsText= whenToActivate?.joinToString("\n") { it.toLogString(indent + 1, translationSet) }
+        val itemsText= getActiveWhens(true)?.joinToString("\n") { it.toLogString(indent + 1, translationSet) }
         return "${indentString(indent)}Choose parameter ${translationSet.getText(parameterRef, indentString(indent))}\n" +
                 "$itemsText"
     }
@@ -22,4 +22,7 @@ data class Choose(
         visitor.visit(this)
         whenToActivate!!.forEach { it.accept(visitor) }
     }
+
+    fun getActiveWhens(defaultValue: Boolean)=
+        this.whenToActivate?.filter { it.isActivated(parameterRef?.value?:parameterRef?.parameter?.value) }
 }
