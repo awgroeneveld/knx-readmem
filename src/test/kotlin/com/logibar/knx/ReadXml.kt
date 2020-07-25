@@ -5,6 +5,7 @@ import com.logibar.knx.model.AbsoluteSegment
 import com.logibar.knx.model.Knx
 import com.logibar.knx.model.Memory
 import com.logibar.knx.model.TranslationSet
+import com.logibar.knx.model.UIElementTranslator
 import com.logibar.knx.util.ParamaterMemoryUtil
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -136,7 +137,7 @@ class ReadXml {
 
         val codeSegmentsForParameters=prog.static!!.parametersAndUnions!!.parameterOrUnions!!.filter { it.memory != null }
             .map { it.memory!!.codeSegment!! }
-        val inputByCodeSegment =codeSegments
+        val inputByCodeSegment =codeSegmentsForParameters
             .distinct()
             .map { it to readCodeSegment(it) }
 //            .map { it to it.data } //
@@ -187,6 +188,54 @@ class ReadXml {
         println(parameters)
 //        println(unions)
         val channel = prog.dynamic!!.channel!!
+        channel.items!!
+            .forEach { println(it.toLogString(0, translationSet)) }
+    }
+
+
+    @Test
+    fun showUI() {
+        val context = JAXBContext.newInstance(Knx::class.java);
+        val f = this::class.java.getResourceAsStream("/dimmer.xml")
+
+        val unmarshaller = context.createUnmarshaller()
+        unmarshaller.eventHandler = (MyValidationEventHandler());
+        val knx = unmarshaller.unmarshal(f) as Knx
+
+        val manufacturer = knx.manufacturerData!!.manufacturer
+        val prog = manufacturer!!.applicationPrograms!!.first()
+        val codeSegments = prog.static!!.code!!.absoluteSegments!!
+
+        val codeSegmentsForParameters=prog.static!!.parametersAndUnions!!.parameterOrUnions!!.filter { it.memory != null }
+            .map { it.memory!!.codeSegment!! }
+        val inputByCodeSegment =codeSegmentsForParameters
+            .distinct()
+            .map { it to it.data!! }
+            .toMap()
+
+        val translationsById =
+            manufacturer.languages!!.first().translationUnit!!.translationElements!!.map { it.refId!! to it }
+                .toMap()
+        val translationSet =
+            TranslationSet(translationsById)
+
+
+
+        val pmu = ParamaterMemoryUtil(knx).paramaterMemoryById
+
+        pmu.values.forEach { parameterMemory ->
+            val bar = inputByCodeSegment[parameterMemory.segment]!!
+            val extractedBytes =
+                selectBits(bar, parameterMemory.bitOffset, parameterMemory.numberOfBits, parameterMemory.relativeOffset)
+
+            val value = if (extractedBytes.size == 0) 0 else fromByteArray(extractedBytes)
+            parameterMemory.value = value
+        }
+
+        val channel = prog.dynamic!!.channel!!
+        channel.accept(UIElementTranslator(translationsById))
+
+
         channel.items!!
             .forEach { println(it.toLogString(0, translationSet)) }
     }

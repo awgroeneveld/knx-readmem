@@ -23,4 +23,6 @@ data class ParameterRef(
     val access: Access? = null,
     @XmlAttribute(name = "Name")
     val name: String? = null
-)
+) {
+    var translatedText: String?=null
+}

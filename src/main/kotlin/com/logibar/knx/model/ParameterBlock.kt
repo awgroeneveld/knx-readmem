@@ -28,8 +28,15 @@ data class ParameterBlock(
     )
     val items: MutableList<UiElement>? = LinkedList()
 ) : UiElement {
+    var translatedText: String?=null
+
     override fun toLogString(indent: Int, translationSet: TranslationSet): String {
         val itemText=items?.map { it.toLogString(indent+1, translationSet) }?.joinToString(separator = "\n")
         return "${indentString(indent)}ParameterBlock ${translationSet.getText(parameterRef,indentString(indent))?:text}\n$itemText"
+    }
+
+    override fun accept(visitor: UiElementVisitor) {
+        visitor.visit(this)
+        items!!.forEach { it.accept(visitor) }
     }
 }

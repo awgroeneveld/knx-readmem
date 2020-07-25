@@ -34,4 +34,9 @@ data class WhenToActivate(
         val itemText= thenItems?.joinToString(separator = "\n") { it.toLogString(indent + 1, translationSet) }
         return "${indentString(indent)}WhenToActivate, default: $default, test: $test\n$itemText"
     }
+
+    override fun accept(visitor: UiElementVisitor) {
+        visitor.visit(this)
+        thenItems!!.forEach { it.accept(visitor) }
+    }
 }

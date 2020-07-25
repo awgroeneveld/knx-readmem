@@ -24,4 +24,8 @@ data class ParameterRefRef(
         }
         return "${indentString(indent)}Parameter ${translationSet.getText(parameterReference,indentString(indent))} $parameterText"
     }
+
+    override fun accept(visitor: UiElementVisitor) {
+        visitor.visit(this)
+    }
 }

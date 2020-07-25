@@ -17,4 +17,9 @@ data class Choose(
         return "${indentString(indent)}Choose parameter ${translationSet.getText(parameterRef, indentString(indent))}\n" +
                 "$itemsText"
     }
+
+    override fun accept(visitor: UiElementVisitor) {
+        visitor.visit(this)
+        whenToActivate!!.forEach { it.accept(visitor) }
+    }
 }

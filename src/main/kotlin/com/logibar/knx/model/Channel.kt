@@ -25,4 +25,8 @@ data class Channel(
         )
     )
     val items: MutableList<UiElement>? = LinkedList()
-)
+) {
+    fun accept(uiElementVisitor: UiElementVisitor) {
+        items?.forEach { it.accept(uiElementVisitor) }
+    }
+}

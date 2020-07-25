@@ -15,4 +15,8 @@ data class ComObjectRefRef(
         val functionText=refTrans?.getFunctionText()?:comTrans?.getFunctionText()
         return "${indentString(indent)} Comobject: $text:$functionText, object number: ${comObjectReference.comObject!!.number}"
     }
+
+    override fun accept(visitor: UiElementVisitor) {
+        visitor.visit(this)
+    }
 }
