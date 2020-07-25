@@ -30,8 +30,12 @@ data class ParameterBlock(
 ) : UiElement {
     var translatedText: String?=null
 
-    override fun toLogString(indent: Int, translationSet: TranslationSet): String {
-        val itemText=items?.map { it.toLogString(indent+1, translationSet) }?.joinToString(separator = "\n")
+    override fun toLogString(
+        indent: Int,
+        translationSet: TranslationSet,
+        deviceChanges: Map<String, ParameterMemory>
+    ): String {
+        val itemText=items?.map { it.toLogString(indent+1, translationSet, deviceChanges) }?.joinToString(separator = "\n")
         return "${indentString(indent)}ParameterBlock ${translationSet.getText(parameterRef,indentString(indent))?:text}\n$itemText"
     }
 

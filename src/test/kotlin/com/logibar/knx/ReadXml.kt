@@ -4,7 +4,7 @@ package com.logibar.knx
 import com.logibar.knx.model.AbsoluteSegment
 import com.logibar.knx.model.Knx
 import com.logibar.knx.model.Memory
-import com.logibar.knx.model.TranslateExtensions.translate
+import com.logibar.knx.model.TranslationExtensions.translate
 import com.logibar.knx.model.TranslationSet
 import com.logibar.knx.model.UIElementTranslator
 import com.logibar.knx.model.UiElementDefaultValuesProvider
@@ -27,7 +27,6 @@ import javax.xml.bind.ValidationEvent
 import javax.xml.bind.ValidationEventHandler
 import javax.xml.bind.ValidationEventLocator
 import javax.xml.bind.helpers.DefaultValidationEventHandler
-import kotlin.experimental.and
 import kotlin.experimental.xor
 import kotlin.streams.toList
 
@@ -94,7 +93,7 @@ class ReadXml {
                     throw Exception("Read less bytes than expected in segment: ${codeSegment.id}, start address ${startAddress}, bytes $bytes")
                 }
 
-                buf.put( x)
+                buf.put(x)
                 startAddress += bytes
                 Thread.sleep(50)
                 bytes = min(codeSegmentEndAddress - startAddress, numBytes)
@@ -137,9 +136,10 @@ class ReadXml {
         val prog = manufacturer!!.applicationPrograms!!.first()
         val codeSegments = prog.static!!.code!!.absoluteSegments!!
 
-        val codeSegmentsForParameters=prog.static!!.parametersAndUnions!!.parameterOrUnions!!.filter { it.memory != null }
-            .map { it.memory!!.codeSegment!! }
-        val inputByCodeSegment =codeSegmentsForParameters
+        val codeSegmentsForParameters =
+            prog.static!!.parametersAndUnions!!.parameterOrUnions!!.filter { it.memory != null }
+                .map { it.memory!!.codeSegment!! }
+        val inputByCodeSegment = codeSegmentsForParameters
             .distinct()
             .map { it to readCodeSegment(it) }
 //            .map { it to it.data } //
@@ -190,8 +190,8 @@ class ReadXml {
         println(parameters)
 //        println(unions)
         val channel = prog.dynamic!!.channel!!
-        channel.items!!
-            .forEach { println(it.toLogString(0, translationSet)) }
+//        channel.items!!
+//            .forEach { println(it.toLogString(0, translationSet, deviceChanges)) }
     }
 
 
@@ -208,9 +208,10 @@ class ReadXml {
         val prog = manufacturer!!.applicationPrograms!!.first()
         val codeSegments = prog.static!!.code!!.absoluteSegments!!
 
-        val codeSegmentsForParameters=prog.static!!.parametersAndUnions!!.parameterOrUnions!!.filter { it.memory != null }
-            .map { it.memory!!.codeSegment!! }
-        val inputByCodeSegment =codeSegmentsForParameters
+        val codeSegmentsForParameters =
+            prog.static!!.parametersAndUnions!!.parameterOrUnions!!.filter { it.memory != null }
+                .map { it.memory!!.codeSegment!! }
+        val inputByCodeSegment = codeSegmentsForParameters
             .distinct()
             .map { it to it.data!! }
             .toMap()
@@ -220,7 +221,6 @@ class ReadXml {
                 .toMap()
         val translationSet =
             TranslationSet(translationsById)
-
 
 
         val pmu = ParamaterMemoryUtil(knx).paramaterMemoryById
@@ -238,11 +238,38 @@ class ReadXml {
         prog.static!!.translate(translationSet)
         channel.accept(UIElementTranslator(translationSet))
 
-        val defaultValuesProvider=UiElementDefaultValuesProvider()
+        val defaultValuesProvider = UiElementDefaultValuesProvider()
         channel.accept(defaultValuesProvider)
+        val defaultValuesById = defaultValuesProvider.getDefaultValuesById()
+
+        val parameterDefaultValuesByParameter = prog.static!!.parametersAndUnions!!.getAllParameters()
+            .map { it to (defaultValuesById[it.id] ?: it.value!!) }
+            .toMap()
+
+        val deviceDataByCodeSegment = codeSegmentsForParameters
+            .distinct()
+            .map { it to readCodeSegment(it) }
+            .toMap()
+
+        val devicePmu = ParamaterMemoryUtil(knx, parameterDefaultValuesByParameter).paramaterMemoryById
+
+        devicePmu.values.forEach { parameterMemory ->
+            val bar = deviceDataByCodeSegment.getValue(parameterMemory.segment)
+            val extractedBytes =
+                selectBits(bar, parameterMemory.bitOffset, parameterMemory.numberOfBits, parameterMemory.relativeOffset)
+
+            val value = if (extractedBytes.isEmpty()) 0 else fromByteArray(extractedBytes)
+            parameterMemory.value = value
+        }
+
+        val deviceChanges = devicePmu.filter {
+            it.value.defaultValue != it.value.value
+        }
+
+        val sortedDeviceChanges=deviceChanges.values.sortedBy { it.offset*8 + it.bitOffset }
 
         channel.items!!
-            .forEach { println(it.toLogString(0, translationSet)) }
+            .forEach { println(it.toLogString(0, translationSet, deviceChanges)) }
     }
 
 

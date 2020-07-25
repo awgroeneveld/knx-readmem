@@ -30,9 +30,17 @@ data class WhenToActivate(
     )
     val thenItems: MutableList<UiElement>? = LinkedList()
 ) : UiElement {
-    override fun toLogString(indent: Int, translationSet: TranslationSet):String {
-        val itemText= thenItems?.joinToString(separator = "\n") { it.toLogString(indent + 1, translationSet) }
-        return "${indentString(indent)}WhenToActivate, default: $default, test: $test\n$itemText"
+    override fun toLogString(
+        indent: Int,
+        translationSet: TranslationSet,
+        deviceChanges: Map<String, ParameterMemory>
+    ):String {
+        val itemText= thenItems?.joinToString(separator = "\n") { it.toLogString(
+            indent + 1,
+            translationSet,
+            deviceChanges
+        ) }
+        return "${indentString(indent)}WhenToActivate, default: ${default?:false}, testValue: ${test?:'-'}\n$itemText"
     }
 
     override fun accept(visitor: UiElementVisitor) {

@@ -18,4 +18,7 @@ class ParametersAndUnions() {
     val parameterOrUnions: MutableList<ParameterOrUnion>? =
         LinkedList()
 
+    fun getAllParameters()=
+        parameterOrUnions!!.filterIsInstance<Parameter>().filter { it.memory!=null } +
+                parameterOrUnions.filterIsInstance<Union>().flatMap { it.parameters!! }
 }

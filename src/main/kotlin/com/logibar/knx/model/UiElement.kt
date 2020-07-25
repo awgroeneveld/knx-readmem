@@ -3,7 +3,11 @@ package com.logibar.knx.model
 
 interface UiElement {
     fun indentString(indent: Int) = "  ".repeat(indent)
-    fun toLogString(indent: Int, translationSet: TranslationSet): String
+    fun toLogString(
+        indent: Int,
+        translationSet: TranslationSet,
+        deviceChanges: Map<String, ParameterMemory>
+    ): String
     fun accept(visitor: UiElementVisitor)
 }
 
@@ -29,15 +33,16 @@ class UIElementTranslator(private val translationSet: TranslationSet) : UiElemen
     override fun visit(whenToActivate: WhenToActivate) = true
 }
 
+
+
 class UiElementDefaultValuesProvider() : UiElementVisitor {
     private var parameterDefaultValuesById = HashMap<String, Int>()
-    private var lastChoose:Choose?=null
 
     fun getDefaultValuesById()=parameterDefaultValuesById.toMap()
 
     private fun addIfNotNull(parameterReference: ParameterRef?) {
         if (parameterReference?.value != null)
-            parameterDefaultValuesById[parameterReference.id!!] = parameterReference.value!!
+            parameterDefaultValuesById[parameterReference.parameter!!.id!!] = parameterReference.value
     }
 
 
@@ -47,9 +52,15 @@ class UiElementDefaultValuesProvider() : UiElementVisitor {
     }
 
     override fun visit(choose: Choose):Boolean {
-        this.lastChoose=choose
         addIfNotNull(choose.parameterRef)
-        return true
+        val activeWhens=choose.getActiveWhens(if (choose.parameterRef==null) null else getValue(choose.parameterRef))
+        activeWhens?.forEach { visit(it) }
+        return false
+    }
+
+    private fun getValue(parameterRef: ParameterRef): Int {
+        val parameter=parameterRef.parameter!!
+        return parameterRef.value?:parameterDefaultValuesById[parameter.id]?:parameter.value!!
     }
 
     override fun visit(comObjectRefRef: ComObjectRefRef):Boolean {
@@ -62,7 +73,7 @@ class UiElementDefaultValuesProvider() : UiElementVisitor {
     }
 
     override fun visit(whenToActivate: WhenToActivate):Boolean {
-        return whenToActivate.isActivated(lastChoose?.parameterRef?.value?:lastChoose?.parameterRef?.parameter?.value)
+        return true
     }
 
 }

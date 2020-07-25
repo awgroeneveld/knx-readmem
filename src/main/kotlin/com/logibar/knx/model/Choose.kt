@@ -12,8 +12,23 @@ data class Choose(
     @field:XmlElement(name = "when")
     val whenToActivate: MutableList<WhenToActivate>? = LinkedList()
 ) : UiElement {
-    override fun toLogString(indent: Int, translationSet: TranslationSet):String {
-        val itemsText= getActiveWhens(true)?.joinToString("\n") { it.toLogString(indent + 1, translationSet) }
+    override fun toLogString(
+        indent: Int,
+        translationSet: TranslationSet,
+        deviceChanges: Map<String, ParameterMemory>
+    ):String {
+        val itemsText= whenToActivate!!.mapNotNull {
+            val deviceValue = deviceChanges[parameterRef!!.parameter!!.id]
+            val defaultValue = parameterRef!!.value ?: parameterRef.parameter!!.value
+            val activeDefault = it.isActivated(defaultValue)
+            val activeDevice = if (deviceValue != null) it.isActivated(deviceValue.value) else activeDefault
+            val prefix = (if (activeDefault) "A" else "-") + (if (activeDevice) "A" else "-")
+            if (activeDevice || activeDefault)
+                prefix + it.toLogString(indent + 1, translationSet, deviceChanges)
+            else
+                null
+        }
+            .joinToString("\n")
         return "${indentString(indent)}Choose parameter ${translationSet.getText(parameterRef, indentString(indent))}\n" +
                 "$itemsText"
     }
@@ -23,6 +38,6 @@ data class Choose(
         whenToActivate!!.forEach { it.accept(visitor) }
     }
 
-    fun getActiveWhens(defaultValue: Boolean)=
-        this.whenToActivate?.filter { it.isActivated(parameterRef?.value?:parameterRef?.parameter?.value) }
+    fun getActiveWhens(value: Int?)=
+        this.whenToActivate?.filter { it.isActivated(value) }
 }

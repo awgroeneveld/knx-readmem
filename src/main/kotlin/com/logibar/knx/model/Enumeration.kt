@@ -24,7 +24,7 @@ interface VisitableStaticElement {
 }
 
 
-object TranslateExtensions {
+object TranslationExtensions {
 
     fun Static.translate(translationSet: TranslationSet) {
         parameterTypes?.forEach { it.translate(translationSet) }
@@ -49,21 +49,46 @@ object TranslateExtensions {
     }
 
     fun Parameter.translate(translationSet: TranslationSet) {
-        this.translation = translationSet.getText(id!!) ?: text
+        this.translation = translationSet.getText(id!!)
     }
 
     fun ParameterRef.translate(translationSet: TranslationSet) {
-        this.translation = translationSet.getText(id!!) ?: parameter!!.translation
+        val parameterTranslation=parameter!!.translation
+        val refTranslation=translationSet.getText(id!!)
+        if (refTranslation!=null) {
+            this.translation = refTranslation
+            if (parameterTranslation==null){
+                parameter.translation=refTranslation
+            }
+        }
+        else {
+            this.translation = parameterTranslation
+        }
     }
 
     fun ComObject.translate(translationSet: TranslationSet) {
-        this.translation = translationSet.getText(id!!) ?: this.text
-        this.functionTranslation = translationSet.getFunctionText(id) ?:this.functionText
+        this.translation = translationSet.getText(id!!)
+        this.functionTranslation = translationSet.getFunctionText(id)
     }
 
     fun ComObjectRef.translate(translationSet: TranslationSet){
-        this.translation=translationSet.getText(id!!)?:comObject!!.translation
-        this.functionTranslation=translationSet.getFunctionText(id)?:comObject!!.functionTranslation
+        val objectTranslation = comObject!!.translation
+        val refTranslation = translationSet.getText(id!!)
+        val objectFunctionTranslation = comObject.functionTranslation
+        val refFunctionTranslation = translationSet.getFunctionText(id)
+
+        if (refTranslation!=null) {
+            this.translation = refTranslation
+            this.functionTranslation = refFunctionTranslation
+            if(objectTranslation==null){
+                comObject.translation=refTranslation
+                comObject.functionTranslation=refFunctionTranslation
+            }
+        }
+        else{
+            this.translation = objectTranslation
+            this.functionTranslation = objectFunctionTranslation
+        }
     }
 
 

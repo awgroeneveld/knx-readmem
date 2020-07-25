@@ -8,7 +8,11 @@ data class ComObjectRefRef(
     @XmlAttribute(name = "RefId")
     val comObjectReference: ComObjectRef? = null
 ) : UiElement {
-    override fun toLogString(indent: Int, translationSet: TranslationSet):String {
+    override fun toLogString(
+        indent: Int,
+        translationSet: TranslationSet,
+        deviceChanges: Map<String, ParameterMemory>
+    ):String {
         val refTrans=translationSet.translationsById[comObjectReference!!.id]
         val comTrans=translationSet.translationsById[comObjectReference!!.comObject!!.id]
         val text=refTrans?.getText()?:comTrans?.getText()

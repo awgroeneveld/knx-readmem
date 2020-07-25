@@ -6,8 +6,13 @@ import com.logibar.knx.model.Parameter
 import com.logibar.knx.model.ParameterMemory
 import com.logibar.knx.model.Union
 
-class ParamaterMemoryUtil(knx: Knx) {
+class ParamaterMemoryUtil(knx: Knx, private val parameterDefaultValuesByParameter: Map<Parameter, Int>?=null) {
+
     val paramaterMemoryById: Map<String, ParameterMemory>
+
+    private fun getDefaultValue(parameter: Parameter):Int{
+        return parameterDefaultValuesByParameter?.get(parameter)?:parameter.value!!
+    }
 
     init {
         val static = knx.manufacturerData!!.manufacturer!!.applicationPrograms!!.first().static!!
@@ -40,7 +45,7 @@ class ParamaterMemoryUtil(knx: Knx) {
             offset = memory.codeSegment!!.address!! + memory.offset +(parameter.offset?:0),
             bitOffset = memory.bitOffset!! + (parameter.bitOffset ?: 0),
             numberOfBits = parameter.parameterType!!.getSizeInBits(),
-            defaultValue = parameter.value!!
+            defaultValue = getDefaultValue(parameter)
         )
     }
 
