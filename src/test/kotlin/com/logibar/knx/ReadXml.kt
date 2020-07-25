@@ -4,30 +4,27 @@ package com.logibar.knx
 import com.logibar.knx.model.AbsoluteSegment
 import com.logibar.knx.model.Knx
 import com.logibar.knx.model.Memory
-import com.logibar.knx.model.ParameterBlock
 import com.logibar.knx.model.TranslationSet
 import com.logibar.knx.util.ParamaterMemoryUtil
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import tuwien.auto.calimero.IndividualAddress
 import tuwien.auto.calimero.link.KNXNetworkLinkIP
 import tuwien.auto.calimero.link.medium.TPSettings
 import tuwien.auto.calimero.mgmt.ManagementClientImpl
-import java.awt.print.Book
 import java.io.StringWriter
-import java.lang.Exception
 import java.lang.Integer.min
 import java.net.InetSocketAddress
 import java.nio.ByteBuffer
 import java.util.*
 import java.util.regex.Pattern
 import javax.xml.bind.JAXBContext
-import javax.xml.bind.JAXBException
 import javax.xml.bind.Marshaller
 import javax.xml.bind.ValidationEvent
 import javax.xml.bind.ValidationEventHandler
 import javax.xml.bind.ValidationEventLocator
 import javax.xml.bind.helpers.DefaultValidationEventHandler
-import javax.xml.stream.XMLInputFactory
+import kotlin.experimental.and
 import kotlin.experimental.xor
 import kotlin.streams.toList
 
@@ -69,7 +66,7 @@ class ReadXml {
 
     }
 
-    fun readCodeSegment(codeSegment: AbsoluteSegment): BitSet {
+    fun readCodeSegment(codeSegment: AbsoluteSegment): ByteArray {
         println("Reading segment starting at ${codeSegment.address}")
         val buf = ByteBuffer.allocate(codeSegment.size!!)
         val lineAddress = IndividualAddress("1.1.10")
@@ -82,10 +79,10 @@ class ReadXml {
             TPSettings.TP1
         )
         val client = ManagementClientImpl(networkLink)
-        val dest = client.createDestination(lineAddress,true)
+        val dest = client.createDestination(lineAddress, true)
         var startAddress = codeSegment.address!!
         val codeSegmentEndAddress = codeSegment.endAddress()
-        val numBytes=4
+        val numBytes = 4
         var bytes = min(codeSegmentEndAddress - startAddress, numBytes)
         try {
             while (bytes != 0) {
@@ -105,7 +102,7 @@ class ReadXml {
             dest.destroy()
             client.detach()
         }
-        return BitSet.valueOf(buf)
+        return buf.array()
     }
 
     @Test
@@ -135,7 +132,9 @@ class ReadXml {
         val prog = manufacturer!!.applicationPrograms!!.first()
         val codeSegments = prog.static!!.code!!.absoluteSegments!!
 
-        val inputByCodeSegment = prog.static!!.parametersAndUnions!!.parameterOrUnions!!.filter { it.memory!=null }.map{it.memory!!.codeSegment!!}.distinct()
+        val inputByCodeSegment = prog.static!!.parametersAndUnions!!.parameterOrUnions!!.filter { it.memory != null }
+            .map { it.memory!!.codeSegment!! }
+            .distinct()
             .map { it to readCodeSegment(it) }
             .toMap()
 
@@ -162,13 +161,16 @@ class ReadXml {
 //                .filter { it.memory.offset==offset}
         val pmu = ParamaterMemoryUtil(knx).paramaterMemoryById
 
-        pmu.values.forEach { parameterMemory-> val bitSet=inputByCodeSegment[parameterMemory.segment]!!
-            val extractedBitSet=bitSet[parameterMemory.relativeOffset, parameterMemory.relativeOffset+parameterMemory.numberOfBits+1]
-            val value=if (extractedBitSet.length()==0) 0 else extractedBitSet.toLongArray()[0].toInt()
-            parameterMemory.value=value
+        pmu.values.forEach { parameterMemory ->
+            val bar = inputByCodeSegment[parameterMemory.segment]!!
+            val extractedBytes =
+                selectBits(bar, parameterMemory.bitOffset, parameterMemory.numberOfBits, parameterMemory.relativeOffset)
+
+            val value = if (extractedBytes.size == 0) 0 else fromByteArray(extractedBytes)
+            parameterMemory.value = value
         }
 
-        val deviceChanges=pmu.entries.filter { it.value.defaultValue!=it.value.value }
+        val deviceChanges = pmu.entries.filter { it.value.defaultValue != it.value.value }
 
         val x = LinkedList(pmu.values.sortedBy { it.startPosInBits() }).mapIndexed { index, it -> index to it }
         val nonconsecutive =
@@ -183,6 +185,20 @@ class ReadXml {
         val channel = prog.dynamic!!.channel!!
         channel.items!!
             .forEach { println(it.toLogString(0, translationSet)) }
+    }
+
+
+    fun fromByteArray(pbytes: ByteArray): Int {
+        val bytes = if (pbytes.size < 4) ByteArray(4).apply {
+            set(0, if (pbytes.isNotEmpty()) pbytes[0] else 0)
+            set(1, if (pbytes.size >= 2) pbytes[1] else 0)
+            set(2, if (pbytes.size >= 3) pbytes[2] else 0)
+            set(3, if (pbytes.size >= 4) pbytes[3] else 0)
+        } else pbytes
+        return bytes[0].toInt() and 0xFF shl 24 or
+                (bytes[1].toInt() and 0xFF shl 16) or
+                (bytes[2].toInt() and 0xFF shl 8) or
+                (bytes[3].toInt() and 0xFF shl 0)
     }
 
     private fun marshall(context: JAXBContext, knx: Knx) {
@@ -205,4 +221,113 @@ class ReadXml {
             .toList()
 
     }
+
+    fun powerOf2(x: Int) = if (x == 0) 1 else 2 shl x - 1
+
+
+    @Test
+    fun testPowerOf2() {
+        Assertions.assertEquals(1, powerOf2(0))
+        Assertions.assertEquals(2, powerOf2(1))
+        Assertions.assertEquals(4, powerOf2(2))
+        Assertions.assertEquals(8, powerOf2(3))
+        Assertions.assertEquals(256, powerOf2(8))
+    }
+
+    @Test
+    fun bytearrays() {
+        val x = ByteArray(4)
+        x[0] = 4.toByte()
+        x[1] = 255.toByte()
+        x[2] = 255.toByte()
+        x[3] = 255.toByte()
+        val y = BitSet.valueOf(x)
+        //y.flip(1)
+        val a = y[0, 1]
+        val b = y[1, 1]
+        val c = y[0, 2]
+        val d = y[5, 6]
+        val e = y[8 - 4, 8 - 1]
+        val eb = e.toByteArray()
+        println(eb[0].toInt() and 0xFF)
+
+        val start = 0
+        val count = 2
+        val and = andFactor(start, count)
+
+        System.out.println("b and 0xFF")
+    }
+
+    @Test
+    fun testSelectDualByteInArray() {
+        Assertions.assertEquals(
+            listOf(9),
+            selectBits(arrayOf(4.toByte(), 128.toByte()).toByteArray(), 5, 4).map { it.toInt() }
+        )
+        Assertions.assertEquals(
+            listOf(32, 8),
+            selectBits(arrayOf(4.toByte(), 1.toByte()).toByteArray(), 5, 11).map { it.toInt() }
+        )
+//        Assertions.assertEquals(2, selectBits(arrayOf(4.toByte()).toByteArray(), 5, 2)[0])
+//        Assertions.assertEquals(3, selectBits(arrayOf(12.toByte()).toByteArray(), 4, 2)[0])
+//        Assertions.assertEquals(1, selectBits(arrayOf(128.toByte()).toByteArray(), 0, 1)[0])
+    }
+
+
+    @Test
+    fun testSelectSingleByteInArray() {
+        Assertions.assertEquals(1, selectBits(arrayOf(4.toByte()).toByteArray(), 5, 1)[0])
+        Assertions.assertEquals(2, selectBits(arrayOf(4.toByte()).toByteArray(), 5, 2)[0])
+        Assertions.assertEquals(3, selectBits(arrayOf(12.toByte()).toByteArray(), 4, 2)[0])
+        Assertions.assertEquals(1, selectBits(arrayOf(128.toByte()).toByteArray(), 0, 1)[0])
+    }
+
+
+    @Test
+    fun testSelectBits() {
+        Assertions.assertEquals(1, selectBits(4, 5, 1))
+        Assertions.assertEquals(2, selectBits(4, 5, 2))
+        Assertions.assertEquals(3, selectBits(12, 4, 2))
+        Assertions.assertEquals(1, selectBits(128.toByte(), 0, 1))
+//        Assertions.assertEquals(4, selectBits(12, 5, 1))
+//        Assertions.assertEquals(4, selectBits(4, 5, 2))
+    }
+
+    @Test
+    fun testAndFactor() {
+        Assertions.assertEquals(4, andFactor(5, 1))
+        Assertions.assertEquals(6, andFactor(5, 2))
+        Assertions.assertEquals(7, andFactor(5, 3))
+        Assertions.assertEquals(12, andFactor(4, 2))
+    }
+
+
+    fun selectBits(bytes: ByteArray, offsetBits: Int, numberOfBits: Int, startIndex: Int = 0): ByteArray {
+        var index = startIndex
+        val leftShift =
+            if (offsetBits + numberOfBits >= 16) (8 - offsetBits)
+            else (if (offsetBits + numberOfBits > 8) (offsetBits + numberOfBits) % 8 else 0)
+        val byteCount = 1 + (numberOfBits - 1) / 8
+        val buf = ByteBuffer.allocate(byteCount)
+        var handledBits = min(8 - offsetBits, numberOfBits)
+        var prevValue: Int? = selectBits(bytes[index++], offsetBits, handledBits)
+        while (handledBits < numberOfBits) {
+            val remainingBits = numberOfBits - handledBits
+            val bitCount = if (remainingBits < 8) remainingBits else 8
+            val byte = bytes[index++]
+            buf.put(((prevValue!! shl leftShift) + selectBits(byte, 0, leftShift)).toByte())
+            prevValue = if (bitCount <= offsetBits) null else selectBits(byte, offsetBits, bitCount - offsetBits)
+            handledBits += bitCount
+        }
+        if (prevValue != null) {
+            buf.put((prevValue shl leftShift).toByte())
+        }
+        return buf.array()
+
+    }
+
+    private fun selectBits(byte: Byte, offsetBit: Int, count: Int) =
+        ((byte.toInt() and andFactor(offsetBit, count)) shr (8 - offsetBit - count))
+
+    private fun andFactor(start: Int, count: Int) = (powerOf2(8 - start) - powerOf2(8 - start - count))
 }
