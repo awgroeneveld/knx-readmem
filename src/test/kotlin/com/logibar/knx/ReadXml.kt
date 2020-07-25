@@ -91,7 +91,7 @@ class ReadXml {
                     throw Exception("Read less bytes than expected in segment: ${codeSegment.id}, start address ${startAddress}, bytes $bytes")
                 }
 
-                buf.put(startAddress - codeSegment.address!!, x)
+                buf.put( x)
                 startAddress += bytes
                 Thread.sleep(50)
                 bytes = min(codeSegmentEndAddress - startAddress, numBytes)
@@ -99,8 +99,10 @@ class ReadXml {
         } catch (e: Throwable) {
             println(e.message)
         } finally {
-            dest.destroy()
-            client.detach()
+            dest.close()
+//            dest.destroy()
+            client.close()
+            networkLink.close()
         }
         return buf.array()
     }
@@ -132,10 +134,12 @@ class ReadXml {
         val prog = manufacturer!!.applicationPrograms!!.first()
         val codeSegments = prog.static!!.code!!.absoluteSegments!!
 
-        val inputByCodeSegment = prog.static!!.parametersAndUnions!!.parameterOrUnions!!.filter { it.memory != null }
+        val codeSegmentsForParameters=prog.static!!.parametersAndUnions!!.parameterOrUnions!!.filter { it.memory != null }
             .map { it.memory!!.codeSegment!! }
+        val inputByCodeSegment =codeSegments
             .distinct()
             .map { it to readCodeSegment(it) }
+//            .map { it to it.data } //
             .toMap()
 
 
@@ -190,10 +194,10 @@ class ReadXml {
 
     fun fromByteArray(pbytes: ByteArray): Int {
         val bytes = if (pbytes.size < 4) ByteArray(4).apply {
-            set(0, if (pbytes.isNotEmpty()) pbytes[0] else 0)
-            set(1, if (pbytes.size >= 2) pbytes[1] else 0)
-            set(2, if (pbytes.size >= 3) pbytes[2] else 0)
-            set(3, if (pbytes.size >= 4) pbytes[3] else 0)
+            set(3, if (pbytes.isNotEmpty()) pbytes[0] else 0)
+            set(2, if (pbytes.size >= 2) pbytes[1] else 0)
+            set(1, if (pbytes.size >= 3) pbytes[2] else 0)
+            set(0, if (pbytes.size >= 4) pbytes[3] else 0)
         } else pbytes
         return bytes[0].toInt() and 0xFF shl 24 or
                 (bytes[1].toInt() and 0xFF shl 16) or
