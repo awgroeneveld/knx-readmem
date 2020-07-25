@@ -36,7 +36,7 @@ data class ParameterBlock(
     }
 
     override fun accept(visitor: UiElementVisitor) {
-        visitor.visit(this)
-        items!!.forEach { it.accept(visitor) }
+        if (visitor.visit(this))
+            items!!.forEach { it.accept(visitor) }
     }
 }

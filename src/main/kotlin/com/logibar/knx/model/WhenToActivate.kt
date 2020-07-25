@@ -36,8 +36,8 @@ data class WhenToActivate(
     }
 
     override fun accept(visitor: UiElementVisitor) {
-        visitor.visit(this)
-        thenItems!!.forEach { it.accept(visitor) }
+        if (visitor.visit(this))
+            thenItems!!.forEach { it.accept(visitor) }
     }
 
     fun isActivated(value: Int?)=

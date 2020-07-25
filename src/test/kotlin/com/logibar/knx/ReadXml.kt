@@ -7,6 +7,7 @@ import com.logibar.knx.model.Memory
 import com.logibar.knx.model.TranslateExtensions.translate
 import com.logibar.knx.model.TranslationSet
 import com.logibar.knx.model.UIElementTranslator
+import com.logibar.knx.model.UiElementDefaultValuesProvider
 import com.logibar.knx.util.ParamaterMemoryUtil
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -237,6 +238,8 @@ class ReadXml {
         prog.static!!.translate(translationSet)
         channel.accept(UIElementTranslator(translationSet))
 
+        val defaultValuesProvider=UiElementDefaultValuesProvider()
+        channel.accept(defaultValuesProvider)
 
         channel.items!!
             .forEach { println(it.toLogString(0, translationSet)) }
