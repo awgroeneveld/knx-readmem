@@ -9,6 +9,7 @@ interface UiElement {
         deviceChanges: Map<String, ParameterMemory>
     ): String
     fun accept(visitor: UiElementVisitor)
+    fun hasChanges(deviceChanges: Map<String, ParameterMemory>):Boolean
 }
 
 interface UiElementVisitor {

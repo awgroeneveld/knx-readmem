@@ -43,4 +43,8 @@ data class ParameterBlock(
         if (visitor.visit(this))
             items!!.forEach { it.accept(visitor) }
     }
+
+    override fun hasChanges(deviceChanges: Map<String, ParameterMemory>): Boolean {
+        return items!!.any { it.hasChanges(deviceChanges) }
+    }
 }

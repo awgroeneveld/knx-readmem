@@ -48,6 +48,10 @@ data class WhenToActivate(
             thenItems!!.forEach { it.accept(visitor) }
     }
 
+    override fun hasChanges(deviceChanges: Map<String, ParameterMemory>): Boolean {
+        return thenItems!!.any { it.hasChanges(deviceChanges) }
+    }
+
     fun isActivated(value: Int?)=
         (default!=null && default) || (test!=null && test==value)
 }

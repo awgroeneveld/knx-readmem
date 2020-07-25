@@ -21,9 +21,9 @@ data class Choose(
         val defaultValue = parameterRef!!.value ?: parameterRef.parameter!!.value
         val itemsText= whenToActivate!!.mapNotNull {
             val activeDefault = it.isActivated(defaultValue)
-            val activeDevice = if (deviceValue != null) it.isActivated(deviceValue.value) else activeDefault
+            val activeDevice = if (deviceValue != null) it.isActivated(deviceValue.value) || it.hasChanges(deviceChanges) else activeDefault
             val prefix = (if (activeDefault) "A" else "-") + (if (activeDevice) "A" else "-")
-            if (true || activeDevice || activeDefault)
+            if (activeDevice || activeDefault)
                 prefix + it.toLogString(indent + 1, translationSet, deviceChanges)
             else
                 null
@@ -36,6 +36,10 @@ data class Choose(
     override fun accept(visitor: UiElementVisitor) {
         visitor.visit(this)
         whenToActivate!!.forEach { it.accept(visitor) }
+    }
+
+    override fun hasChanges(deviceChanges: Map<String, ParameterMemory>): Boolean {
+        return whenToActivate!!.any{it.hasChanges(deviceChanges)}
     }
 
     fun getActiveWhens(value: Int?)=

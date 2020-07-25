@@ -23,4 +23,8 @@ data class ComObjectRefRef(
     override fun accept(visitor: UiElementVisitor) {
         visitor.visit(this)
     }
+
+    override fun hasChanges(deviceChanges: Map<String, ParameterMemory>): Boolean {
+        return false
+    }
 }
