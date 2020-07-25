@@ -262,6 +262,8 @@ class ReadXml {
             parameterMemory.value = value
         }
 
+//        val interesting=devicePmu["M-0008_A-301A-11-134F-O000A_P-765"]
+
         val deviceChanges = devicePmu.filter {
             it.value.defaultValue != it.value.value
         }
@@ -269,7 +271,7 @@ class ReadXml {
         val sortedDeviceChanges=deviceChanges.values.sortedBy { it.offset*8 + it.bitOffset }
 
         channel.items!!
-            .forEach { println(it.toLogString(0, translationSet, deviceChanges)) }
+            .forEach { println(it.toLogString(0, translationSet, devicePmu)) }
     }
 
 

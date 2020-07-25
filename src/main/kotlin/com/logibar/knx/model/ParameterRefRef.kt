@@ -17,7 +17,7 @@ data class ParameterRefRef(
         val restriction=parameter.parameterType!!.typeRestriction
         val deviceDifferentValue=deviceChanges[parameter.id]?.value
         val defaultValue=parameterReference.value?:parameterReference.parameter!!.value
-        val postfix=if (deviceDifferentValue==null) "" else "\t<CHANGED>${deviceDifferentValue}<CHANGED>"
+        val postfix=if (deviceDifferentValue==null || defaultValue==deviceDifferentValue) "" else "\t<CHANGED>${deviceDifferentValue}<CHANGED>"
         var parameterText="Value: ${defaultValue}, underlying parameter with id: ${parameter.id} $postfix"
         if (restriction!=null) {
             val currentEnum=restriction.enumerations!!.first { it.value==parameter.value }
