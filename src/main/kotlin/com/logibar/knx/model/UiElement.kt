@@ -42,8 +42,8 @@ class UiElementDefaultValuesProvider() : UiElementVisitor {
     fun getDefaultValuesById()=parameterDefaultValuesById.toMap()
 
     private fun addIfNotNull(parameterReference: ParameterRef?) {
-        if (parameterReference?.value != null)
-            parameterDefaultValuesById[parameterReference.parameter!!.id!!] = parameterReference.value
+        if (parameterReference?.intValue() != null)
+            parameterDefaultValuesById[parameterReference.parameter!!.id!!] = parameterReference.intValue()!!
     }
 
 
@@ -61,7 +61,7 @@ class UiElementDefaultValuesProvider() : UiElementVisitor {
 
     private fun getValue(parameterRef: ParameterRef): Int {
         val parameter=parameterRef.parameter!!
-        return parameterRef.value?:parameterDefaultValuesById[parameter.id]?:parameter.value!!
+        return parameterRef.intValue()?:parameterDefaultValuesById[parameter.id]?:parameter.intValue()!!
     }
 
     override fun visit(comObjectRefRef: ComObjectRefRef):Boolean {

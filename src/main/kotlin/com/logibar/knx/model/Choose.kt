@@ -18,7 +18,7 @@ data class Choose(
         deviceChanges: Map<String, ParameterMemory>
     ):String {
         val deviceValue = deviceChanges[parameterRef!!.parameter!!.id]
-        val defaultValue = parameterRef!!.value ?: parameterRef.parameter!!.value
+        val defaultValue = parameterRef.intValue() ?: parameterRef.parameter!!.intValue()
         val itemsText= whenToActivate!!.mapNotNull {
             val activeDefault = it.isActivated(defaultValue)
             val activeDevice = if (deviceValue != null) it.isActivated(deviceValue.value) || it.hasChanges(deviceChanges) else activeDefault
@@ -29,7 +29,7 @@ data class Choose(
                 null
         }
             .joinToString("\n")
-        return "${indentString(indent)}Choose parameter ${translationSet.getText(parameterRef, indentString(indent))}, id ${parameterRef!!.parameter!!.id}, device: ${deviceValue?:'-'}\n" +
+        return "${indentString(indent)}Choose parameter ${translationSet.getText(parameterRef, indentString(indent))}, id ${parameterRef.parameter!!.id}, device: ${deviceValue?:'-'}\n" +
                 "$itemsText"
     }
 

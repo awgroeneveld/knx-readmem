@@ -11,7 +11,7 @@ class ParamaterMemoryUtil(knx: Knx, private val parameterDefaultValuesByParamete
     val paramaterMemoryById: Map<String, ParameterMemory>
 
     private fun getDefaultValue(parameter: Parameter):Int{
-        return parameterDefaultValuesByParameter?.get(parameter)?:parameter.value!!
+        return parameterDefaultValuesByParameter?.get(parameter)?:parameter.intValue()
     }
 
     init {

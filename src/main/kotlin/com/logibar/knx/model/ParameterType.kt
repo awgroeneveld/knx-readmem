@@ -15,7 +15,10 @@ data class ParameterType(
     @field:XmlElement(name = "TypeRestriction")
     val typeRestriction: TypeRestriction? = null,
     @field:XmlElement(name = "TypeNone")
-    val typeNone: TypeNone? = null
+    val typeNone: TypeNone? = null,
+    @field:XmlElement(name = "TypeText")
+    val typeText: TypeText? = null
+
 ) {
     fun getSizeInBits(): Int {
         if (typeNumber != null)
@@ -25,4 +28,17 @@ data class ParameterType(
         return 0
     }
 
+    fun getType():ParamType{
+        if (typeNumber!=null)
+            return ParamType.NUMBER
+        if (typeRestriction!=null)
+            return ParamType.RESTRICTION
+        if (typeText!=null)
+            return ParamType.TEXT
+        return ParamType.NONE
+    }
+}
+
+enum class ParamType(val intValue:Boolean){
+    NUMBER(true), RESTRICTION(true), TEXT(false), NONE(false)
 }

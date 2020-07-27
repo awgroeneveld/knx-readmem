@@ -16,7 +16,7 @@ data class ParameterRef(
     @XmlAttribute(name = "DisplayOrder")
     val displayOrder: Int? = null,
     @XmlAttribute(name = "Value")
-    val value: Int? = null,
+    val value: String? = null,
     @XmlAttribute(name = "Text")
     val text: String? = null,
     @XmlAttribute(name = "Access")
@@ -24,5 +24,10 @@ data class ParameterRef(
     @XmlAttribute(name = "Name")
     val name: String? = null
 ) {
-    var translation: String?=null
+    var translation: String? = null
+    fun intValue(): Int =
+        if (parameter!!.parameterType!!.getType().intValue)
+            value?.toInt()?:-2
+        else -1
+
 }

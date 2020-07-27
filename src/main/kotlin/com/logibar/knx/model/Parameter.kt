@@ -19,7 +19,7 @@ class Parameter(
     @XmlAttribute(name = "Access")
     val access: Access? = null,
     @XmlAttribute(name = "Value")
-    val value: Int? = null,
+    val value: String? = null,
     @field:XmlElement(name = "Memory")
     override val memory: Memory? = null,
     @field: XmlElement(name = "Property")
@@ -33,5 +33,8 @@ class Parameter(
 ) : ParameterOrUnion{
     var translation:String?=null
 
-
+    fun intValue(): Int =
+        if (parameterType!!.getType().intValue)
+            value!!.toInt()
+        else -1
 }

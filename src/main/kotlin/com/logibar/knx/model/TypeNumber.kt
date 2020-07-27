@@ -12,3 +12,9 @@ data class TypeNumber(
     @XmlAttribute(name = "MaxInclusive")
     val maxInclusive: Long? = null
 )
+
+
+data class TypeText(
+    @XmlAttribute(name = "SizeInBit")
+    val sizeInBit: Int? = null
+)

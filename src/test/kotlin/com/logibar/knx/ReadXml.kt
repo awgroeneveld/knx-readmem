@@ -34,7 +34,7 @@ class ReadXml {
 
     class MyValidationEventHandler() : ValidationEventHandler {
         val defaultValidationEventHandler = DefaultValidationEventHandler()
-        val ignoredNodes = listOf("LoadProcedures", "Options")
+        val ignoredNodes = listOf("LoadProcedures", "Options","Extension")
         val regex = Pattern.compile(".*local:\"(.*)\"\\)")
 
         override fun handleEvent(event: ValidationEvent): Boolean {
@@ -71,8 +71,8 @@ class ReadXml {
     fun readCodeSegment(codeSegment: AbsoluteSegment): ByteArray {
         println("Reading segment starting at ${codeSegment.address}")
         val buf = ByteBuffer.allocate(codeSegment.size!!)
-        val lineAddress = IndividualAddress("1.1.10")
-        val localHost = "172.19.1.51"
+        val lineAddress = IndividualAddress("1.1.11")
+        val localHost = "172.19.1.95"
         val gateway = "172.19.4.10"
         val networkLink = KNXNetworkLinkIP.newTunnelingLink(
             InetSocketAddress(localHost, 0),
@@ -112,7 +112,7 @@ class ReadXml {
     @Test
     fun readXML() {
         val context = JAXBContext.newInstance(Knx::class.java);
-        val f = this::class.java.getResourceAsStream("/dimmer.xml")
+        val f = this::class.java.getResourceAsStream("/ipgateway-2168.xml")
 
         val unmarshaller = context.createUnmarshaller()
         unmarshaller.eventHandler = (MyValidationEventHandler());
@@ -198,7 +198,7 @@ class ReadXml {
     @Test
     fun showUI() {
         val context = JAXBContext.newInstance(Knx::class.java);
-        val f = this::class.java.getResourceAsStream("/dimmer.xml")
+        val f = this::class.java.getResourceAsStream("/dimmer-1032.xml")
 
         val unmarshaller = context.createUnmarshaller()
         unmarshaller.eventHandler = (MyValidationEventHandler());
@@ -213,7 +213,7 @@ class ReadXml {
                 .map { it.memory!!.codeSegment!! }
         val inputByCodeSegment = codeSegmentsForParameters
             .distinct()
-            .map { it to it.data!! }
+            .map { it to it.data }
             .toMap()
 
         val translationsById =
@@ -226,13 +226,22 @@ class ReadXml {
         val pmu = ParamaterMemoryUtil(knx).paramaterMemoryById
 
         pmu.values.forEach { parameterMemory ->
-            val bar = inputByCodeSegment[parameterMemory.segment]!!
-            val extractedBytes =
-                selectBits(bar, parameterMemory.bitOffset, parameterMemory.numberOfBits, parameterMemory.relativeOffset)
-
-            val value = if (extractedBytes.size == 0) 0 else fromByteArray(extractedBytes)
+            val bar = inputByCodeSegment[parameterMemory.segment]
+            var value:Int?=null
+            if (bar!=null) {
+                val extractedBytes =
+                    selectBits(
+                        bar,
+                        parameterMemory.bitOffset,
+                        parameterMemory.numberOfBits,
+                        parameterMemory.relativeOffset
+                    )
+                value = if (extractedBytes.isEmpty()) 0 else fromByteArray(extractedBytes)
+            }
             parameterMemory.value = value
         }
+
+        val xxxxx=pmu.values.sortedBy { it.relativeOffset*8+it.bitOffset }.filter { it.offset>=19373 }
 
         val channel = prog.dynamic!!.channel!!
         prog.static!!.translate(translationSet)
@@ -243,7 +252,7 @@ class ReadXml {
         val defaultValuesById = defaultValuesProvider.getDefaultValuesById()
 
         val parameterDefaultValuesByParameter = prog.static!!.parametersAndUnions!!.getAllParameters()
-            .map { it to (defaultValuesById[it.id] ?: it.value!!) }
+            .map { it to (defaultValuesById[it.id] ?: it.intValue()!!) }
             .toMap()
 
         val deviceDataByCodeSegment = codeSegmentsForParameters
@@ -258,7 +267,7 @@ class ReadXml {
             val extractedBytes =
                 selectBits(bar, parameterMemory.bitOffset, parameterMemory.numberOfBits, parameterMemory.relativeOffset)
 
-            val value = if (extractedBytes.isEmpty()) 0 else fromByteArray(extractedBytes)
+            val value = if (extractedBytes.isEmpty() || !parameterMemory.parameter.parameterType!!.getType().intValue) 0 else fromByteArray(extractedBytes)
             parameterMemory.value = value
         }
 

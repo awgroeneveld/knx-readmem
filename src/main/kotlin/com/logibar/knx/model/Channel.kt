@@ -20,6 +20,10 @@ data class Channel(
             type = ParameterBlock::class
         ),
         XmlElement(
+            name = "ComObjectRefRef",
+            type = ComObjectRefRef::class
+        ),
+        XmlElement(
             name = "choose",
             type = Choose::class
         )

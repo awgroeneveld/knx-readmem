@@ -1,0 +1,283 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" CreatedBy="ETS5" ToolVersion="5.7.1093.38570" xmlns="http://knx.org/xml/project/20">
+  <ManufacturerData>
+    <Manufacturer RefId="M-0008">
+      <ApplicationPrograms>
+        <ApplicationProgram Id="M-0008_A-9017-01-4E11" ApplicationNumber="36887" ApplicationVersion="1" ProgramType="ApplicationProgram" MaskVersion="MV-0012" VisibleDescription="2168 00, KNX/IP-Schnittstelle V2.0 901710" Name="KNX/IP-Schnittstelle V2.0 901710" LoadProcedureStyle="DefaultProcedure" PeiType="1" DefaultLanguage="de-DE" DynamicTableManagement="false" Linkable="false" PreEts4Style="true" ConvertedFromPreEts4Data="true" Hash="TmXXhBSnIPVluz+5pxU1EQ==">
+          <Static>
+            <Code>
+              <AbsoluteSegment Id="M-0008_A-9017-01-4E11_AS-0100" Address="256" Size="256">
+                <Data>////AAiQFgEICJAWAQBgAAD/Y2NjYwEAAAAA/zMAAAAIkBYIkBYEEMCoAAr///8AwKgACuAAFwz//////////wAA4AAXDA5XAgYeAEdpcmEgS05YL0lQLVJvdXRlcgAAAAAAAAAAAAAAAABkAAAAAAAAAAAAAAAAAAAAAAAAAAB3dxcXCDMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</Data>
+                <Mask>/wAAAP////////////////////////8AAP///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////w==</Mask>
+              </AbsoluteSegment>
+            </Code>
+            <ParameterTypes>
+              <ParameterType Id="M-0008_A-9017-01-4E11_PT-Page" Name="Page">
+                <TypeNone />
+              </ParameterType>
+              <ParameterType Id="M-0008_A-9017-01-4E11_PT-Void" Name="Void">
+                <TypeNone />
+              </ParameterType>
+              <ParameterType Id="M-0008_A-9017-01-4E11_PT-DeviceName" Name="DeviceName">
+                <TypeText SizeInBit="240" />
+              </ParameterType>
+              <ParameterType Id="M-0008_A-9017-01-4E11_PT-0.5F255" Name="0_255">
+                <TypeNumber SizeInBit="8" Type="unsignedInt" minInclusive="0" maxInclusive="255" />
+              </ParameterType>
+              <ParameterType Id="M-0008_A-9017-01-4E11_PT-IPAddressMode" Name="IPAddressMode">
+                <TypeRestriction Base="Value" SizeInBit="8">
+                  <Enumeration Text="manuelle Eingabe" Value="1" Id="M-0008_A-9017-01-4E11_PT-IPAddressMode_EN-1" DisplayOrder="1" />
+                  <Enumeration Text="von DHCP Dienst" Value="12" Id="M-0008_A-9017-01-4E11_PT-IPAddressMode_EN-12" DisplayOrder="4" />
+                </TypeRestriction>
+              </ParameterType>
+              <ParameterType Id="M-0008_A-9017-01-4E11_PT-3Byte" Name="3Byte">
+                <TypeNumber SizeInBit="24" Type="signedInt" minInclusive="-8388608" maxInclusive="8388607" />
+              </ParameterType>
+            </ParameterTypes>
+            <Parameters>
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1000" Name="General" ParameterType="M-0008_A-9017-01-4E11_PT-Page" Text="Allgemein" Access="Read" Value="" />
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1100" Name="IPAddress" ParameterType="M-0008_A-9017-01-4E11_PT-Page" Text="IP-Adresse" Access="Read" Value="" />
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1200" Name="IPSubnet" ParameterType="M-0008_A-9017-01-4E11_PT-Page" Text="IP-Subnetzmaske" Access="Read" Value="" />
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1300" Name="IPGateway" ParameterType="M-0008_A-9017-01-4E11_PT-Page" Text="IP-Standard Gateway" Access="Read" Value="" />
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1110" Name="IPAddress" ParameterType="M-0008_A-9017-01-4E11_PT-Void" Text="IP-Adresse" Access="Read" Value="" />
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1210" Name="IPSubnet" ParameterType="M-0008_A-9017-01-4E11_PT-Void" Text="IP-Subnetzmaske" Access="Read" Value="" />
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1310" Name="IPGateway" ParameterType="M-0008_A-9017-01-4E11_PT-Void" Text="IP-Standard Gateway" Access="Read" Value="" />
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1" Name="VersionCheckParameter1" ParameterType="M-0008_A-9017-01-4E11_PT-3Byte" Text="VersionCheckParameter1" Value="102423">
+                <Memory CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="9" BitOffset="0" />
+              </Parameter>
+              <Parameter Id="M-0008_A-9017-01-4E11_P-2" Name="VersionCheckParameter2" ParameterType="M-0008_A-9017-01-4E11_PT-3Byte" Text="VersionCheckParameter2" Value="299031">
+                <Memory CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="32" BitOffset="0" />
+              </Parameter>
+              <Parameter Id="M-0008_A-9017-01-4E11_P-3" Name="VersionCheckParameter3" ParameterType="M-0008_A-9017-01-4E11_PT-3Byte" Text="VersionCheckParameter3" Value="561175">
+                <Memory CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="35" BitOffset="0" />
+              </Parameter>
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1030" Name="IPAddressMode" ParameterType="M-0008_A-9017-01-4E11_PT-IPAddressMode" Text="IP Adresszuweisung" Value="12">
+                <Memory CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="38" BitOffset="0" />
+              </Parameter>
+              <Parameter Id="M-0008_A-9017-01-4E11_P-4" Name="TTL" ParameterType="M-0008_A-9017-01-4E11_PT-0.5F255" Text="TTL" Value="128">
+                <Memory CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="39" BitOffset="0" />
+              </Parameter>
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1111" Name="IPA1" ParameterType="M-0008_A-9017-01-4E11_PT-0.5F255" Text="Byte 1" Value="192">
+                <Memory CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="40" BitOffset="0" />
+              </Parameter>
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1112" Name="IPA2" ParameterType="M-0008_A-9017-01-4E11_PT-0.5F255" Text="Byte 2" Value="168">
+                <Memory CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="41" BitOffset="0" />
+              </Parameter>
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1113" Name="IPA3" ParameterType="M-0008_A-9017-01-4E11_PT-0.5F255" Text="Byte 3" Value="0">
+                <Memory CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="42" BitOffset="0" />
+              </Parameter>
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1114" Name="IPA4" ParameterType="M-0008_A-9017-01-4E11_PT-0.5F255" Text="Byte 4" Value="10">
+                <Memory CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="43" BitOffset="0" />
+              </Parameter>
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1211" Name="IPM1" ParameterType="M-0008_A-9017-01-4E11_PT-0.5F255" Text="Byte 1" Value="255">
+                <Memory CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="44" BitOffset="0" />
+              </Parameter>
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1212" Name="IPM2" ParameterType="M-0008_A-9017-01-4E11_PT-0.5F255" Text="Byte 2" Value="255">
+                <Memory CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="45" BitOffset="0" />
+              </Parameter>
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1213" Name="IPM3" ParameterType="M-0008_A-9017-01-4E11_PT-0.5F255" Text="Byte 3" Value="255">
+                <Memory CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="46" BitOffset="0" />
+              </Parameter>
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1214" Name="IPM4" ParameterType="M-0008_A-9017-01-4E11_PT-0.5F255" Text="Byte 4" Value="0">
+                <Memory CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="47" BitOffset="0" />
+              </Parameter>
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1311" Name="IPG1" ParameterType="M-0008_A-9017-01-4E11_PT-0.5F255" Text="Byte 1" Value="0">
+                <Memory CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="48" BitOffset="0" />
+              </Parameter>
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1312" Name="IPG2" ParameterType="M-0008_A-9017-01-4E11_PT-0.5F255" Text="Byte 2" Value="0">
+                <Memory CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="49" BitOffset="0" />
+              </Parameter>
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1313" Name="IPG3" ParameterType="M-0008_A-9017-01-4E11_PT-0.5F255" Text="Byte 3" Value="0">
+                <Memory CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="50" BitOffset="0" />
+              </Parameter>
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1314" Name="IPG4" ParameterType="M-0008_A-9017-01-4E11_PT-0.5F255" Text="Byte 4" Value="0">
+                <Memory CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="51" BitOffset="0" />
+              </Parameter>
+              <Parameter Id="M-0008_A-9017-01-4E11_P-1010" Name="DeviceName" ParameterType="M-0008_A-9017-01-4E11_PT-DeviceName" Text="Gerätename" Value="Gira KNX/IP-Schnittstelle">
+                <Memory CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="76" BitOffset="0" />
+              </Parameter>
+            </Parameters>
+            <ParameterRefs>
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1_R-1" RefId="M-0008_A-9017-01-4E11_P-1" Tag="1" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-2_R-2" RefId="M-0008_A-9017-01-4E11_P-2" Tag="2" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-3_R-3" RefId="M-0008_A-9017-01-4E11_P-3" Tag="3" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-4_R-4" RefId="M-0008_A-9017-01-4E11_P-4" Tag="4" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1000_R-1000" RefId="M-0008_A-9017-01-4E11_P-1000" Tag="1000" DisplayOrder="1000" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1010_R-1010" RefId="M-0008_A-9017-01-4E11_P-1010" Tag="1010" DisplayOrder="1010" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1030_R-1030" RefId="M-0008_A-9017-01-4E11_P-1030" Tag="1030" DisplayOrder="1030" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1100_R-1100" RefId="M-0008_A-9017-01-4E11_P-1100" Tag="1100" DisplayOrder="1100" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1110_R-1110" RefId="M-0008_A-9017-01-4E11_P-1110" Tag="1110" DisplayOrder="1110" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1111_R-1111" RefId="M-0008_A-9017-01-4E11_P-1111" Tag="1111" DisplayOrder="1111" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1112_R-1112" RefId="M-0008_A-9017-01-4E11_P-1112" Tag="1112" DisplayOrder="1112" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1113_R-1113" RefId="M-0008_A-9017-01-4E11_P-1113" Tag="1113" DisplayOrder="1113" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1114_R-1114" RefId="M-0008_A-9017-01-4E11_P-1114" Tag="1114" DisplayOrder="1114" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1200_R-1200" RefId="M-0008_A-9017-01-4E11_P-1200" Tag="1200" DisplayOrder="1200" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1210_R-1210" RefId="M-0008_A-9017-01-4E11_P-1210" Tag="1210" DisplayOrder="1210" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1211_R-1211" RefId="M-0008_A-9017-01-4E11_P-1211" Tag="1211" DisplayOrder="1211" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1212_R-1212" RefId="M-0008_A-9017-01-4E11_P-1212" Tag="1212" DisplayOrder="1212" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1213_R-1213" RefId="M-0008_A-9017-01-4E11_P-1213" Tag="1213" DisplayOrder="1213" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1214_R-1214" RefId="M-0008_A-9017-01-4E11_P-1214" Tag="1214" DisplayOrder="1214" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1300_R-1300" RefId="M-0008_A-9017-01-4E11_P-1300" Tag="1300" DisplayOrder="1300" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1310_R-1310" RefId="M-0008_A-9017-01-4E11_P-1310" Tag="1310" DisplayOrder="1310" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1311_R-1311" RefId="M-0008_A-9017-01-4E11_P-1311" Tag="1311" DisplayOrder="1311" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1312_R-1312" RefId="M-0008_A-9017-01-4E11_P-1312" Tag="1312" DisplayOrder="1312" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1313_R-1313" RefId="M-0008_A-9017-01-4E11_P-1313" Tag="1313" DisplayOrder="1313" />
+              <ParameterRef Id="M-0008_A-9017-01-4E11_P-1314_R-1314" RefId="M-0008_A-9017-01-4E11_P-1314" Tag="1314" DisplayOrder="1314" />
+            </ParameterRefs>
+            <ComObjectTable CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="25" />
+            <AddressTable CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="22" MaxEntries="0" />
+            <AssociationTable CodeSegment="M-0008_A-9017-01-4E11_AS-0100" Offset="28" MaxEntries="0" />
+            <Options DownloadInvisibleParameters="Background" />
+          </Static>
+          <Dynamic>
+            <Channel Name="Generic" Text="" Number="0" Id="M-0008_A-9017-01-4E11_CH-0">
+              <ParameterBlock Id="M-0008_A-9017-01-4E11_PB-1301" Name="Added by Converter" Text="">
+                <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-1_R-1" />
+                <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-2_R-2" />
+                <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-3_R-3" />
+                <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-4_R-4" />
+              </ParameterBlock>
+              <ParameterBlock Id="M-0008_A-9017-01-4E11_PB-1000" Name="General" Access="Read" ParamRefId="M-0008_A-9017-01-4E11_P-1000_R-1000">
+                <choose ParamRefId="M-0008_A-9017-01-4E11_P-1000_R-1000">
+                  <when default="true">
+                    <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-1010_R-1010" />
+                    <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-1030_R-1030" />
+                  </when>
+                </choose>
+              </ParameterBlock>
+              <choose ParamRefId="M-0008_A-9017-01-4E11_P-1000_R-1000">
+                <when default="true">
+                  <choose ParamRefId="M-0008_A-9017-01-4E11_P-1030_R-1030">
+                    <when test="1">
+                      <ParameterBlock Id="M-0008_A-9017-01-4E11_PB-1100" Name="IPAddress" Access="Read" ParamRefId="M-0008_A-9017-01-4E11_P-1100_R-1100">
+                        <choose ParamRefId="M-0008_A-9017-01-4E11_P-1100_R-1100">
+                          <when default="true">
+                            <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-1110_R-1110" />
+                            <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-1111_R-1111" />
+                            <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-1112_R-1112" />
+                            <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-1113_R-1113" />
+                            <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-1114_R-1114" />
+                          </when>
+                        </choose>
+                      </ParameterBlock>
+                      <ParameterBlock Id="M-0008_A-9017-01-4E11_PB-1200" Name="IPSubnet" Access="Read" ParamRefId="M-0008_A-9017-01-4E11_P-1200_R-1200">
+                        <choose ParamRefId="M-0008_A-9017-01-4E11_P-1200_R-1200">
+                          <when default="true">
+                            <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-1210_R-1210" />
+                            <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-1211_R-1211" />
+                            <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-1212_R-1212" />
+                            <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-1213_R-1213" />
+                            <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-1214_R-1214" />
+                          </when>
+                        </choose>
+                      </ParameterBlock>
+                      <ParameterBlock Id="M-0008_A-9017-01-4E11_PB-1300" Name="IPGateway" Access="Read" ParamRefId="M-0008_A-9017-01-4E11_P-1300_R-1300">
+                        <choose ParamRefId="M-0008_A-9017-01-4E11_P-1300_R-1300">
+                          <when default="true">
+                            <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-1310_R-1310" />
+                            <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-1311_R-1311" />
+                            <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-1312_R-1312" />
+                            <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-1313_R-1313" />
+                            <ParameterRefRef RefId="M-0008_A-9017-01-4E11_P-1314_R-1314" />
+                          </when>
+                        </choose>
+                      </ParameterBlock>
+                    </when>
+                  </choose>
+                </when>
+              </choose>
+            </Channel>
+          </Dynamic>
+        </ApplicationProgram>
+      </ApplicationPrograms>
+      <Languages>
+        <Language Identifier="en-US">
+          <TranslationUnit RefId="M-0008_A-9017-01-4E11">
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_PT-IPAddressMode_EN-1">
+              <Translation AttributeName="Text" Text="manual" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_PT-IPAddressMode_EN-12">
+              <Translation AttributeName="Text" Text="DHCP" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1">
+              <Translation AttributeName="Text" Text="VersionCheckParameter1" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-2">
+              <Translation AttributeName="Text" Text="VersionCheckParameter2" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-3">
+              <Translation AttributeName="Text" Text="VersionCheckParameter3" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1000">
+              <Translation AttributeName="Text" Text="General" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1010">
+              <Translation AttributeName="Text" Text="Device name" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1030">
+              <Translation AttributeName="Text" Text="IP address assignment" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1100">
+              <Translation AttributeName="Text" Text="IP address" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1110">
+              <Translation AttributeName="Text" Text="IP address" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1111">
+              <Translation AttributeName="Text" Text="Byte 1" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1112">
+              <Translation AttributeName="Text" Text="Byte 2" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1113">
+              <Translation AttributeName="Text" Text="Byte 3" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1114">
+              <Translation AttributeName="Text" Text="Byte 4" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1200">
+              <Translation AttributeName="Text" Text="IP subnet mask" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1210">
+              <Translation AttributeName="Text" Text="IP subnet mask" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1211">
+              <Translation AttributeName="Text" Text="Byte 1" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1212">
+              <Translation AttributeName="Text" Text="Byte 2" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1213">
+              <Translation AttributeName="Text" Text="Byte 3" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1214">
+              <Translation AttributeName="Text" Text="Byte 4" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1300">
+              <Translation AttributeName="Text" Text="IP standard gateway" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1310">
+              <Translation AttributeName="Text" Text="IP standard gateway" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1311">
+              <Translation AttributeName="Text" Text="Byte 1" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1312">
+              <Translation AttributeName="Text" Text="Byte 2" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1313">
+              <Translation AttributeName="Text" Text="Byte 3" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11_P-1314">
+              <Translation AttributeName="Text" Text="Byte 4" />
+            </TranslationElement>
+            <TranslationElement RefId="M-0008_A-9017-01-4E11">
+              <Translation AttributeName="Name" Text="KNX/IP Interface V2.0 901710" />
+              <Translation AttributeName="VisibleDescription" Text="2168 00, KNX/IP Interface V2.0 901710" />
+            </TranslationElement>
+          </TranslationUnit>
+        </Language>
+      </Languages>
+    </Manufacturer>
+  </ManufacturerData>
+</KNX>

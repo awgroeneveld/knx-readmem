@@ -20,7 +20,7 @@ data class ParameterRefRef(
         val postfix=if (deviceDifferentValue==null || defaultValue==deviceDifferentValue) "" else "\t<CHANGED>${deviceDifferentValue}<CHANGED>"
         var parameterText="Value: ${defaultValue}, underlying parameter with id: ${parameter.id} $postfix"
         if (restriction!=null) {
-            val currentEnum=restriction.enumerations!!.first { it.value==parameter.value }
+            val currentEnum=restriction.enumerations!!.first { it.value==parameter.intValue() }
 
 //            val addOn="(=${translationSet.getText(currentEnum.id!!,indentString(indent))?:currentEnum.text})\n${indentString(indent+1)}Options:\n"
             val addOn="\n${indentString(indent+1)}Options:\n"
@@ -34,7 +34,7 @@ data class ParameterRefRef(
     }
 
     private fun getDefaultValue() =
-        parameterReference!!.value ?: parameterReference!!.parameter!!.value
+        parameterReference!!.intValue() ?: parameterReference!!.parameter!!.intValue()
 
     override fun accept(visitor: UiElementVisitor) {
         visitor.visit(this)
