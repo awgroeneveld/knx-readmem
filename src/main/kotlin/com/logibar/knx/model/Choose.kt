@@ -17,11 +17,12 @@ data class Choose(
         translationSet: TranslationSet,
         deviceChanges: Map<String, ParameterMemory>
     ):String {
-        val deviceValue = deviceChanges[parameterRef!!.parameter!!.id]
-        val defaultValue = parameterRef.intValue() ?: parameterRef.parameter!!.intValue()
+        val deviceValue = deviceChanges[parameterRef!!.parameter!!.id]?.value
+        val defaultValue = parameterRef.value?.toInt() ?: parameterRef.parameter!!.intValue()
+        val changed=if (deviceValue!=null && deviceValue!=defaultValue) "<CHANGED>$deviceValue</CHANGED>" else ""
         val itemsText= whenToActivate!!.mapNotNull {
             val activeDefault = it.isActivated(defaultValue)
-            val activeDevice = if (deviceValue != null) it.isActivated(deviceValue.value) || it.hasChanges(deviceChanges) else activeDefault
+            val activeDevice = if (deviceValue != null) it.isActivated(deviceValue) || it.hasChanges(deviceChanges) else activeDefault
             val prefix = (if (activeDefault) "A" else "-") + (if (activeDevice) "A" else "-")
             if (activeDevice || activeDefault)
                 prefix + it.toLogString(indent + 1, translationSet, deviceChanges)
@@ -29,7 +30,7 @@ data class Choose(
                 null
         }
             .joinToString("\n")
-        return "${indentString(indent)}Choose parameter ${translationSet.getText(parameterRef, indentString(indent))}, id ${parameterRef.parameter!!.id}, device: ${deviceValue?:'-'}\n" +
+        return "${indentString(indent)}Choose parameter ${translationSet.getText(parameterRef, indentString(indent))}, id ${parameterRef.parameter!!.id}, device: ${deviceValue?:'-'} $changed \n" +
                 "$itemsText"
     }
 

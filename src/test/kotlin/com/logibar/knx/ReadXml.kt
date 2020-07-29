@@ -71,7 +71,7 @@ class ReadXml {
     fun readCodeSegment(codeSegment: AbsoluteSegment): ByteArray {
         println("Reading segment starting at ${codeSegment.address}")
         val buf = ByteBuffer.allocate(codeSegment.size!!)
-        val lineAddress = IndividualAddress("1.1.11")
+        val lineAddress = IndividualAddress("1.2.16")
         val localHost = "172.19.1.95"
         val gateway = "172.19.4.10"
         val networkLink = KNXNetworkLinkIP.newTunnelingLink(
@@ -198,7 +198,7 @@ class ReadXml {
     @Test
     fun showUI() {
         val context = JAXBContext.newInstance(Knx::class.java);
-        val f = this::class.java.getResourceAsStream("/dimmer-1032.xml")
+        val f = this::class.java.getResourceAsStream("/weather-b009.xml")
 
         val unmarshaller = context.createUnmarshaller()
         unmarshaller.eventHandler = (MyValidationEventHandler());
